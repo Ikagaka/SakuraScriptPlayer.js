@@ -21,7 +21,6 @@ SakuraScriptPlayer = (function() {
     }
     this["break"]();
     this.playing = true;
-    script = "\\0\\s[0]\\b[0]\\1\\s[10]\\b[0]\\0" + script;
     reg = {
       "Y0": /^\\0/,
       "Y1": /^\\1/,
@@ -113,7 +112,8 @@ SakuraScriptPlayer = (function() {
           case reg["Ye"].test(script):
             _script = "";
             _this.named.scopes.forEach(function(scope) {
-              return scope.surface().YenE();
+              var _ref;
+              return (_ref = scope.surface()) != null ? _ref.YenE() : void 0;
             });
             break;
           case reg["YY"].test(script):

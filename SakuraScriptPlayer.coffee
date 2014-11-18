@@ -13,7 +13,6 @@ class SakuraScriptPlayer
     @break()
     @playing = true
 
-    script = "\\0\\s[0]\\b[0]\\1\\s[10]\\b[0]\\0" + script
     reg =
       "Y0": /^\\0/
       "Y1": /^\\1/
@@ -56,7 +55,7 @@ class SakuraScriptPlayer
         when reg["YnH"].test(script) then _script = script.replace(reg["YnH"], ""); @named.scope().blimp().br()
         when reg["Yn"].test(script)  then _script = script.replace(reg["Yn"],  ""); @named.scope().blimp().br()
         when reg["Yc"].test(script)  then _script = script.replace(reg["Yc"],  ""); @named.scope().blimp().clear()
-        when reg["Ye"].test(script)  then _script = "";                             @named.scopes.forEach (scope)-> scope.surface().YenE()
+        when reg["Ye"].test(script)  then _script = "";                             @named.scopes.forEach (scope)-> scope.surface()?.YenE()
         when reg["YY"].test(script)  then _script = script.replace(reg["YY"],  ""); @named.scope().blimp().talk("\\")
         else                              _script = script.slice(1);                @named.scope().blimp().talk(script[0])
       script = _script

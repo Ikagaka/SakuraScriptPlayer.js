@@ -25,7 +25,10 @@ SakuraScriptPlayer = (function() {
     reg = {
       "Y0": /^\\0/,
       "Y1": /^\\1/,
+      "Yh": /^\\h/,
+      "Yu": /^\\u/,
       "Yp": /^\\p\[(\d+)\]/,
+      "Ysn": /^\\s(\d)/,
       "Ys": /^\\s\[([^\]]+)\]/,
       "Yb": /^\\b\[([^\]]+)\]/,
       "Yi": /^\\i\[(\d+)\]/,
@@ -34,11 +37,11 @@ SakuraScriptPlayer = (function() {
       "Yq": /^\\q\[([^\]]+)\]/,
       "Y_aS": /^\\_a\[([^\]]+)\]/,
       "Y_aE": /^\\_a/,
-      "Yc": /^\\c/,
-      "Yn": /^\\n/,
       "YnH": /^\\n\[half\]/,
-      "YY": /^\\\\/,
-      "Ye": /^\\e/
+      "Yn": /^\\n/,
+      "Yc": /^\\c/,
+      "Ye": /^\\e/,
+      "YY": /^\\\\/
     };
     (recur = (function(_this) {
       return function() {
@@ -59,6 +62,22 @@ SakuraScriptPlayer = (function() {
             _script = script.replace(reg["Y1"], "");
             _this.named.scope(1).blimp(0);
             break;
+          case reg["Yh"].test(script):
+            _script = script.replace(reg["Yh"], "");
+            _this.named.scope(0).blimp(0);
+            break;
+          case reg["Yu"].test(script):
+            _script = script.replace(reg["Yu"], "");
+            _this.named.scope(1).blimp(0);
+            break;
+          case reg["Yp"].test(script):
+            _script = script.replace(reg["Yp"], "");
+            _this.named.scope(Number(reg["Yp"].exec(script)[1]));
+            break;
+          case reg["Ysn"].test(script):
+            _script = script.replace(reg["Ysn"], "");
+            _this.named.scope().surface(Number(reg["Ysn"].exec(script)[1]));
+            break;
           case reg["Ys"].test(script):
             _script = script.replace(reg["Ys"], "");
             _this.named.scope().surface(Number(reg["Ys"].exec(script)[1]));
@@ -66,6 +85,10 @@ SakuraScriptPlayer = (function() {
           case reg["Yb"].test(script):
             _script = script.replace(reg["Yb"], "");
             _this.named.scope().blimp(Number(reg["Yb"].exec(script)[1]));
+            break;
+          case reg["Yi"].test(script):
+            _script = script.replace(reg["Yi"], "");
+            _this.named.scope().surface().playAnimation(Number(reg["Yi"].exec(script)[1]));
             break;
           case reg["YwN"].test(script):
             _script = script.replace(reg["YwN"], "");
@@ -89,6 +112,9 @@ SakuraScriptPlayer = (function() {
             break;
           case reg["Ye"].test(script):
             _script = "";
+            _this.named.scopes.forEach(function(scope) {
+              return scope.surface().YenE();
+            });
             break;
           case reg["YY"].test(script):
             _script = script.replace(reg["YY"], "");

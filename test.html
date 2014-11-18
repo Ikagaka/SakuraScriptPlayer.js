@@ -14,9 +14,13 @@
 <script src="./node_modules/ikagaka.named.js/Scope.js"></script>
 <script src="./node_modules/ikagaka.named.js/Named.js"></script>
 <script src="./SakuraScriptPlayer.js"></script>
-<input type="text" value="\0\s[0]Hello World!\w8\n\1\s[10]Hello Web Ghost!\n\e" id="SakuraScript"/>
+nar: <input type="file" id="nar" /><br />
+SakuraScript: <input type="text" value="\0\s[0]Hello World!\w8\n\1\s[10]Hello Web Ghost!\n\e" id="SakuraScript"/>
 <input type="button" value="play" id="Play"/>
 <script>
+
+
+
 Promise.all([
   new Promise(function(resolve, reject){
     var nar = new Nar();
@@ -45,19 +49,44 @@ Promise.all([
   var balloon = tmp[1];
   var named = new Named(shell, balloon);
   var ssp = new SakuraScriptPlayer(named);
+  var ssps = [ssp];
 
-  $(named.element).appendTo("body");
+  $(named.element)
+    .appendTo("body")
+    .on("IkagakaSurfaceEvent", function(ev){
+      console.log(ev.detail);
+    });
 
-  $(named.element).on("IkagakaSurfaceEvent", function(ev){
-    console.log(ev.detail);
+  $("#nar").change(function(ev){
+    var nar = new Nar();
+    nar.loadFromBlob(ev.target.files[0], function(err){
+      if(!!err) return console.error(err.stack);
+      var shell = new Shell(nar.getDirectory(/shell\/master\//));
+      shell.load(function(err){
+        if(!!err) return console.error(err.stack);
+        var named = new Named(shell, balloon);
+        var ssp = new SakuraScriptPlayer(named);
+        console.log(named)
+        ssps.push(ssp);
+        $(named.element)
+          .appendTo("body")
+          .on("IkagakaSurfaceEvent", function(ev){
+            console.log(ev.detail);
+          });
+        ssp.play("\\0\\s[0]\\1\\s[10]")
+      });
+    });
   });
+
 
   $("#Play").click(function(){
     var SakuraScript = $("#SakuraScript").val();
 
     console.log(SakuraScript);
 
-    ssp.play(SakuraScript);
+    ssps.forEach(function(ssp){
+      ssp.play(SakuraScript);
+    });
   }).click();
 
 }).catch(function(err){ console.error(err.stack) });

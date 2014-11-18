@@ -1,7 +1,7 @@
 {
   "name":           "ikagaka.sakurascriptplayer.js",
-  "version":        "0.1.1",
-  "description":    "Named scope manager",
+  "version":        "0.2.0",
+  "description":    "Ikagaka SakuraScript Plater",
   "url":            "https://github.com/ikagaka/SakuraScriptPlayer.js",
   "keywords":       ["ikagaka", "unstable", "ukagaka"],
   "repository": {

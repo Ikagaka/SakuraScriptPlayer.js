@@ -2,27 +2,41 @@
 
 class SakuraScriptPlayer
   constructor: (@named)->
-  # SakuraScriptPlayer#play(script:SakuraScriptString, callback:Function():void):void
+    @playing = false
+    @breakTid = 0
+
   play: (script, callback=->)->
+    if @playing
+      setTimeout -> callback(true)
+      return
+
+    @break()
+    @playing = true
+
+    script = "\\0\\s[0]\\b[0]\\1\\s[10]\\b[0]\\0" + script
+    reg =
+      "Y0": /^\\0/
+      "Y1": /^\\1/
+      "Yp": /^\\p\[(\d+)\]/
+      "Ys": /^\\s\[([^\]]+)\]/
+      "Yb": /^\\b\[([^\]]+)\]/
+      "Yi": /^\\i\[(\d+)\]/
+      "YwN": /^\\w(\d+)/
+      "Y_w": /^\\_w\[(\d+)\]/
+      "Yq": /^\\q\[([^\]]+)\]/
+      "Y_aS": /^\\_a\[([^\]]+)\]/
+      "Y_aE": /^\\_a/
+      "Yc": /^\\c/
+      "Yn": /^\\n/
+      "YnH": /^\\n\[half\]/
+      "YY": /^\\\\/
+      "Ye": /^\\e/
+
     do recur = =>
-      if script.length is 0 then return setTimeout((=> @break() ), 10000)
-      reg =
-        "Y0": /^\\0/
-        "Y1": /^\\1/
-        "Yp": /^\\p\[(\d+)\]/
-        "Ys": /^\\s\[([^\]]+)\]/
-        "Yb": /^\\b\[([^\]]+)\]/
-        "Yi": /^\\i\[(\d+)\]/
-        "YwN": /^\\w(\d+)/
-        "Y_w": /^\\_w\[(\d+)\]/
-        "Yq": /^\\q\[([^\]]+)\]/
-        "Y_aS": /^\\_a\[([^\]]+)\]/
-        "Y_aE": /^\\_a/
-        "Yc": /^\\c/
-        "Yn": /^\\n/
-        "YnH": /^\\n\[half\]/
-        "YY": /^\\\\/
-        "Ye": /^\\e/
+      if script.length is 0
+        @playing = false
+        @breakTid = setTimeout((=> @break() ), 10000)
+        return
       switch true
         when reg["Y0"].test(script)  then _script = script.replace(reg["Y0"],  ""); @named.scope(0).blimp(0)
         when reg["Y1"].test(script)  then _script = script.replace(reg["Y1"],  ""); @named.scope(1).blimp(0)
@@ -40,9 +54,12 @@ class SakuraScriptPlayer
         when reg["YY"].test(script)  then _script = script.replace(reg["YY"],  ""); @named.scope().blimp().talk("\\")
         else                              _script = script.slice(1);                @named.scope().blimp().talk(script[0])
       script = _script
-      setTimeout(recur, 80)
+      @breakTid = setTimeout(recur, 80)
     undefined
-  # SakuraScript#break():void
+
   break: ->
-    @named.scope(0).blimp(-1)
-    @named.scope(1).blimp(-1)
+    @playing = false
+    clearTimeout(@breakTid)
+    @named.scopes.forEach (scope)->
+      scope.blimp(-1).clear()
+    undefined

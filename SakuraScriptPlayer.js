@@ -4,39 +4,52 @@ var SakuraScriptPlayer;
 SakuraScriptPlayer = (function() {
   function SakuraScriptPlayer(named) {
     this.named = named;
+    this.playing = false;
+    this.breakTid = 0;
   }
 
   SakuraScriptPlayer.prototype.play = function(script, callback) {
-    var recur;
+    var recur, reg;
     if (callback == null) {
       callback = function() {};
     }
+    if (this.playing) {
+      setTimeout(function() {
+        return callback(true);
+      });
+      return;
+    }
+    this["break"]();
+    this.playing = true;
+    script = "\\0\\s[0]\\b[0]\\1\\s[10]\\b[0]\\0" + script;
+    reg = {
+      "Y0": /^\\0/,
+      "Y1": /^\\1/,
+      "Yp": /^\\p\[(\d+)\]/,
+      "Ys": /^\\s\[([^\]]+)\]/,
+      "Yb": /^\\b\[([^\]]+)\]/,
+      "Yi": /^\\i\[(\d+)\]/,
+      "YwN": /^\\w(\d+)/,
+      "Y_w": /^\\_w\[(\d+)\]/,
+      "Yq": /^\\q\[([^\]]+)\]/,
+      "Y_aS": /^\\_a\[([^\]]+)\]/,
+      "Y_aE": /^\\_a/,
+      "Yc": /^\\c/,
+      "Yn": /^\\n/,
+      "YnH": /^\\n\[half\]/,
+      "YY": /^\\\\/,
+      "Ye": /^\\e/
+    };
     (recur = (function(_this) {
       return function() {
-        var reg, wait, _script;
+        var wait, _script;
         if (script.length === 0) {
-          return setTimeout((function() {
+          _this.playing = false;
+          _this.breakTid = setTimeout((function() {
             return _this["break"]();
           }), 10000);
+          return;
         }
-        reg = {
-          "Y0": /^\\0/,
-          "Y1": /^\\1/,
-          "Yp": /^\\p\[(\d+)\]/,
-          "Ys": /^\\s\[([^\]]+)\]/,
-          "Yb": /^\\b\[([^\]]+)\]/,
-          "Yi": /^\\i\[(\d+)\]/,
-          "YwN": /^\\w(\d+)/,
-          "Y_w": /^\\_w\[(\d+)\]/,
-          "Yq": /^\\q\[([^\]]+)\]/,
-          "Y_aS": /^\\_a\[([^\]]+)\]/,
-          "Y_aE": /^\\_a/,
-          "Yc": /^\\c/,
-          "Yn": /^\\n/,
-          "YnH": /^\\n\[half\]/,
-          "YY": /^\\\\/,
-          "Ye": /^\\e/
-        };
         switch (true) {
           case reg["Y0"].test(script):
             _script = script.replace(reg["Y0"], "");
@@ -86,15 +99,19 @@ SakuraScriptPlayer = (function() {
             _this.named.scope().blimp().talk(script[0]);
         }
         script = _script;
-        return setTimeout(recur, 80);
+        return _this.breakTid = setTimeout(recur, 80);
       };
     })(this))();
     return void 0;
   };
 
   SakuraScriptPlayer.prototype["break"] = function() {
-    this.named.scope(0).blimp(-1);
-    return this.named.scope(1).blimp(-1);
+    this.playing = false;
+    clearTimeout(this.breakTid);
+    this.named.scopes.forEach(function(scope) {
+      return scope.blimp(-1).clear();
+    });
+    return void 0;
   };
 
   return SakuraScriptPlayer;

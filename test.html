@@ -14,6 +14,8 @@
 <script src="./node_modules/ikagaka.named.js/Scope.js"></script>
 <script src="./node_modules/ikagaka.named.js/Named.js"></script>
 <script src="./SakuraScriptPlayer.js"></script>
+<input type="text" value="\0\s[0]Hello World!\w8\n\1\s[10]Hello Web Ghost!\n\e" id="SakuraScript"/>
+<input type="button" value="play" id="Play"/>
 <script>
 Promise.all([
   new Promise(function(resolve, reject){
@@ -44,14 +46,19 @@ Promise.all([
   var named = new Named(shell, balloon);
   var ssp = new SakuraScriptPlayer(named);
 
-
-  $(named.element).appendTo("body")
+  $(named.element).appendTo("body");
 
   $(named.element).on("IkagakaSurfaceEvent", function(ev){
     console.log(ev.detail);
   });
 
-  ssp.play("\\0\\s[0]\\b[0]Hello wrold!\\n\\1\\s[10]Hello world!\\n\\0Hello Web Ghost!\\e");
+  $("#Play").click(function(){
+    var SakuraScript = $("#SakuraScript").val();
+
+    console.log(SakuraScript);
+
+    ssp.play(SakuraScript);
+  }).click();
 
 }).catch(function(err){ console.error(err.stack) });
 

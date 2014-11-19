@@ -44,7 +44,7 @@ SakuraScriptPlayer = (function() {
     };
     (recur = (function(_this) {
       return function() {
-        var wait, _script;
+        var id, title, wait, _ref, _script;
         if (script.length === 0) {
           _this.playing = false;
           _this.breakTid = setTimeout((function() {
@@ -97,6 +97,11 @@ SakuraScriptPlayer = (function() {
             _script = script.replace(reg["Y_w"], "");
             wait = Number(reg["Y_w"].exec(script)[1]);
             break;
+          case reg["Yq"].test(script):
+            _script = script.replace(reg["Yq"], "");
+            _ref = reg["Yq"].exec(script)[1].split(",", 2), title = _ref[0], id = _ref[1];
+            _this.named.scope().blimp().choice(title, id);
+            break;
           case reg["YnH"].test(script):
             _script = script.replace(reg["YnH"], "");
             _this.named.scope().blimp().br();
@@ -112,8 +117,8 @@ SakuraScriptPlayer = (function() {
           case reg["Ye"].test(script):
             _script = "";
             _this.named.scopes.forEach(function(scope) {
-              var _ref;
-              return (_ref = scope.surface()) != null ? _ref.YenE() : void 0;
+              var _ref1;
+              return (_ref1 = scope.surface()) != null ? _ref1.YenE() : void 0;
             });
             break;
           case reg["YY"].test(script):

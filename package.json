@@ -1,9 +1,12 @@
 {
   "name":           "ikagaka.sakurascriptplayer.js",
-  "version":        "1.0.0",
+  "version":        "1.0.1",
   "description":    "Ikagaka SakuraScript Plater",
   "url":            "https://github.com/ikagaka/SakuraScriptPlayer.js",
   "keywords":       ["ikagaka", "unstable", "ukagaka"],
+  "scripts": {
+    "watch": "coffee -cwb ./*.coffee"
+  },
   "repository": {
     "type":         "git",
     "url":          "https://github.com/ikagaka/SakuraScriptPlayer.js"

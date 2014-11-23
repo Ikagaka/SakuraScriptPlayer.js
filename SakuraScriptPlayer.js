@@ -29,6 +29,7 @@ SakuraScriptPlayer = (function() {
       "Yh": /^\\h/,
       "Yu": /^\\u/,
       "Yp": /^\\p\[(\d+)\]/,
+      "Ypn": /^\\p(\d)/,
       "Ysn": /^\\s(\d)/,
       "Ys": /^\\s\[([^\]]+)\]/,
       "Yb": /^\\b\[([^\]]+)\]/,
@@ -36,6 +37,8 @@ SakuraScriptPlayer = (function() {
       "YwN": /^\\w(\d+)/,
       "Y_w": /^\\\_w\[(\d+)\]/,
       "Y_q": /^\\\_q/,
+      "Yt": /^\\t/,
+      "Yx": /^\\x/,
       "Yq": /^\\q\[([^\]]+)\]/,
       "Y_aS": /^\\_a\[([^\]]+)\]/,
       "Y_aE": /^\\_a/,
@@ -76,6 +79,10 @@ SakuraScriptPlayer = (function() {
           case reg["Yp"].test(script):
             _script = script.replace(reg["Yp"], "");
             _this.named.scope(Number(reg["Yp"].exec(script)[1]));
+            break;
+          case reg["Ypn"].test(script):
+            _script = script.replace(reg["Ypn"], "");
+            _this.named.scope(Number(reg["Ypn"].exec(script)[1]));
             break;
           case reg["Ysn"].test(script):
             _script = script.replace(reg["Ysn"], "");

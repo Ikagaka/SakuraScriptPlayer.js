@@ -22,6 +22,7 @@ class SakuraScriptPlayer
       "Yh": /^\\h/
       "Yu": /^\\u/
       "Yp": /^\\p\[(\d+)\]/
+      "Ypn": /^\\p(\d)/
       "Ysn": /^\\s(\d)/
       "Ys": /^\\s\[([^\]]+)\]/
       "Yb": /^\\b\[([^\]]+)\]/
@@ -29,6 +30,8 @@ class SakuraScriptPlayer
       "YwN": /^\\w(\d+)/
       "Y_w": /^\\\_w\[(\d+)\]/
       "Y_q": /^\\\_q/
+      "Yt": /^\\t/
+      "Yx": /^\\x/
       "Yq": /^\\q\[([^\]]+)\]/
       "Y_aS": /^\\_a\[([^\]]+)\]/
       "Y_aE": /^\\_a/
@@ -50,6 +53,7 @@ class SakuraScriptPlayer
         when reg["Yh"].test(script)  then _script = script.replace(reg["Yh"],  ""); @named.scope(0).blimp(0)
         when reg["Yu"].test(script)  then _script = script.replace(reg["Yu"],  ""); @named.scope(1).blimp(0)
         when reg["Yp"].test(script)  then _script = script.replace(reg["Yp"],  ""); @named.scope(Number(reg["Yp"].exec(script)[1]))
+        when reg["Ypn"].test(script) then _script = script.replace(reg["Ypn"], ""); @named.scope(Number(reg["Ypn"].exec(script)[1]))
         when reg["Ysn"].test(script) then _script = script.replace(reg["Ysn"], ""); @named.scope().surface(Number(reg["Ysn"].exec(script)[1]))
         when reg["Ys"].test(script)  then _script = script.replace(reg["Ys"],  ""); @named.scope().surface(Number(reg["Ys"].exec(script)[1]))
         when reg["Yb"].test(script)  then _script = script.replace(reg["Yb"],  ""); @named.scope().blimp(Number(reg["Yb"].exec(script)[1]))

@@ -6,6 +6,7 @@ SakuraScriptPlayer = (function() {
     this.named = named;
     this.playing = false;
     this.breakTid = 0;
+    this.timeCritical = false;
   }
 
   SakuraScriptPlayer.prototype.play = function(script, callback) {
@@ -13,7 +14,7 @@ SakuraScriptPlayer = (function() {
     if (callback == null) {
       callback = function() {};
     }
-    if (this.playing) {
+    if (this.playing && this.timeCritical) {
       setTimeout(function() {
         return callback(true);
       });
@@ -21,6 +22,7 @@ SakuraScriptPlayer = (function() {
     }
     this["break"]();
     this.playing = true;
+    this.timeCritical = false;
     quick = false;
     wait = 80;
     reg = {
@@ -112,6 +114,10 @@ SakuraScriptPlayer = (function() {
             _script = script.replace(reg["Y_w"], "");
             wait = Number(reg["Y_w"].exec(script)[1]);
             break;
+          case reg["Yt"].test(script):
+            _script = script.replace(reg["Yt"], "");
+            _this.timeCritical = true;
+            break;
           case reg["Yq"].test(script):
             _script = script.replace(reg["Yq"], "");
             _ref = reg["Yq"].exec(script)[1].split(",", 2), title = _ref[0], id = _ref[1];
@@ -154,6 +160,7 @@ SakuraScriptPlayer = (function() {
 
   SakuraScriptPlayer.prototype["break"] = function() {
     this.playing = false;
+    this.timeCritical = false;
     clearTimeout(this.breakTid);
     this.named.scopes.forEach(function(scope) {
       return scope.blimp(-1).clear();

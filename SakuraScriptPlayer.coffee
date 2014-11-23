@@ -4,14 +4,15 @@ class SakuraScriptPlayer
   constructor: (@named)->
     @playing = false
     @breakTid = 0
+    @timeCritical = false
 
   play: (script, callback=->)->
-    if @playing
+    if @playing and @timeCritical
       setTimeout -> callback(true)
       return
-
     @break()
     @playing = true
+    @timeCritical = false
 
     quick = false
     wait = 80
@@ -61,6 +62,7 @@ class SakuraScriptPlayer
         when reg["Y_q"].test(script) then _script = script.replace(reg["Y_q"], ""); quick = !quick
         when reg["YwN"].test(script) then _script = script.replace(reg["YwN"], ""); wait = Number(reg["YwN"].exec(script)[1])*100
         when reg["Y_w"].test(script) then _script = script.replace(reg["Y_w"], ""); wait = Number(reg["Y_w"].exec(script)[1])
+        when reg["Yt"].test(script)  then _script = script.replace(reg["Yt"],  ""); @timeCritical = true
         when reg["Yq"].test(script)  then _script = script.replace(reg["Yq"],  ""); [title, id] = reg["Yq"].exec(script)[1].split(",", 2); @named.scope().blimp().choice(title, id)
         when reg["YnH"].test(script) then _script = script.replace(reg["YnH"], ""); @named.scope().blimp().br()
         when reg["Yn"].test(script)  then _script = script.replace(reg["Yn"],  ""); @named.scope().blimp().br()
@@ -75,6 +77,7 @@ class SakuraScriptPlayer
 
   break: ->
     @playing = false
+    @timeCritical = false
     clearTimeout(@breakTid)
     @named.scopes.forEach (scope)->
       scope.blimp(-1).clear()

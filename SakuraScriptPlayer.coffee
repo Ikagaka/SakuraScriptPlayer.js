@@ -34,8 +34,8 @@ class SakuraScriptPlayer
       "Yt": /^\\t/
       "Yx": /^\\x/
       "Yq": /^\\q\[([^\]]+)\]/
-      "Y_aS": /^\\_a\[([^\]]+)\]/
-      "Y_aE": /^\\_a/
+      "Y_aB":/^\\_a\[([^\]]+)\]/
+      "Y_aE":/^\\_a/
       "YnH": /^\\n\[half\]/
       "Yn": /^\\n/
       "Yc": /^\\c/
@@ -64,6 +64,8 @@ class SakuraScriptPlayer
         when reg["Y_w"].test(script) then _script = script.replace(reg["Y_w"], ""); wait = Number(reg["Y_w"].exec(script)[1])
         when reg["Yt"].test(script)  then _script = script.replace(reg["Yt"],  ""); @timeCritical = true
         when reg["Yq"].test(script)  then _script = script.replace(reg["Yq"],  ""); [title, id] = reg["Yq"].exec(script)[1].split(",", 2); @named.scope().blimp().choice(title, id)
+        when reg["Y_aB"].test(script)then _script = script.replace(reg["Y_aB"],""); id = reg["Y_aB"].exec(script)[1]; @named.scope().blimp().anchorBegin(id)
+        when reg["Y_aE"].test(script)then _script = script.replace(reg["Y_aE"],""); @named.scope().blimp().anchorEnd()
         when reg["YnH"].test(script) then _script = script.replace(reg["YnH"], ""); @named.scope().blimp().br()
         when reg["Yn"].test(script)  then _script = script.replace(reg["Yn"],  ""); @named.scope().blimp().br()
         when reg["Yc"].test(script)  then _script = script.replace(reg["Yc"],  ""); @named.scope().blimp().clear()

@@ -42,7 +42,7 @@ SakuraScriptPlayer = (function() {
       "Yt": /^\\t/,
       "Yx": /^\\x/,
       "Yq": /^\\q\[([^\]]+)\]/,
-      "Y_aS": /^\\_a\[([^\]]+)\]/,
+      "Y_aB": /^\\_a\[([^\]]+)\]/,
       "Y_aE": /^\\_a/,
       "YnH": /^\\n\[half\]/,
       "Yn": /^\\n/,
@@ -122,6 +122,15 @@ SakuraScriptPlayer = (function() {
             _script = script.replace(reg["Yq"], "");
             _ref = reg["Yq"].exec(script)[1].split(",", 2), title = _ref[0], id = _ref[1];
             _this.named.scope().blimp().choice(title, id);
+            break;
+          case reg["Y_aB"].test(script):
+            _script = script.replace(reg["Y_aB"], "");
+            id = reg["Y_aB"].exec(script)[1];
+            _this.named.scope().blimp().anchorBegin(id);
+            break;
+          case reg["Y_aE"].test(script):
+            _script = script.replace(reg["Y_aE"], "");
+            _this.named.scope().blimp().anchorEnd();
             break;
           case reg["YnH"].test(script):
             _script = script.replace(reg["YnH"], "");

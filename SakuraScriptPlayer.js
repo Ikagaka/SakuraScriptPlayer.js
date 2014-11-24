@@ -180,3 +180,11 @@ SakuraScriptPlayer = (function() {
   return SakuraScriptPlayer;
 
 })();
+
+if ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null) {
+  module.exports = SakuraScriptPlayer;
+}
+
+if (window["Ikagaka"] != null) {
+  window["Ikagaka"]["SakuraScriptPlayer"] = SakuraScriptPlayer;
+}

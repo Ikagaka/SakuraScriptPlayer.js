@@ -1,11 +1,12 @@
 {
   "name":           "ikagaka.sakurascriptplayer.js",
-  "version":        "1.0.4",
+  "version":        "1.0.6",
   "description":    "Ikagaka SakuraScript Plater",
   "url":            "https://github.com/ikagaka/SakuraScriptPlayer.js",
   "keywords":       ["ikagaka", "unstable", "ukagaka"],
   "scripts": {
-    "watch": "coffee -cwb ./*.coffee"
+    "watch": "node node_modules/uupaa.watch.js --verbose --action build ./*.coffee",
+    "build": "coffee -cb ./*.coffee"
   },
   "repository": {
     "type":         "git",
@@ -15,6 +16,10 @@
     "ikagaka.named.js": ""
   },
   "devDependencies": {
+    "uupaa.watch.js": ""
   },
-  "license":        "MIT"
+  "main":           "./SakuraScriptPlayer.js",
+  "author":         "duxca",
+  "license":        "MIT",
+  "contributors":   []
 }

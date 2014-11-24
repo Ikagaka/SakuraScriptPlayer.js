@@ -84,3 +84,10 @@ class SakuraScriptPlayer
     @named.scopes.forEach (scope)->
       scope.blimp(-1).clear()
     undefined
+
+
+if module?.exports?
+  module.exports = SakuraScriptPlayer
+
+if window["Ikagaka"]?
+  window["Ikagaka"]["SakuraScriptPlayer"] = SakuraScriptPlayer

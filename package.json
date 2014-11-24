@@ -5,7 +5,7 @@
   "url":            "https://github.com/ikagaka/SakuraScriptPlayer.js",
   "keywords":       ["ikagaka", "unstable", "ukagaka"],
   "scripts": {
-    "watch": "node node_modules/uupaa.watch.js --verbose --action build ./*.coffee",
+    "watch": "coffee -cbw ./*.coffee",
     "build": "coffee -cb ./*.coffee"
   },
   "repository": {
@@ -16,7 +16,6 @@
     "ikagaka.named.js": ""
   },
   "devDependencies": {
-    "uupaa.watch.js": ""
   },
   "main":           "./SakuraScriptPlayer.js",
   "author":         "duxca",

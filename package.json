@@ -18,7 +18,7 @@
   "devDependencies": {
   },
   "main":           "./SakuraScriptPlayer.js",
-  "author":         "duxca",
+  "author":         "Ikagaka",
   "license":        "MIT",
-  "contributors":   []
+  "contributors":   ["legokichi"]
 }

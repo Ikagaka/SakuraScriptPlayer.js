@@ -48,11 +48,13 @@ SakuraScriptPlayer = (function() {
       "Yn": /^\\n/,
       "Yc": /^\\c/,
       "Ye": /^\\e/,
-      "YY": /^\\\\/
+      "YY": /^\\\\/,
+      "Ycom": /^\\\!\[open\,communicatebox\]/,
+      "Yinp": /^\\\!\[open\,inputbox\,([^\,]+)\,(\d+)\,([^\,]+)\]/
     };
     (recur = (function(_this) {
       return function() {
-        var id, title, _ref, _script;
+        var id, text, time, title, _ref, _ref1, _script;
         if (script.length === 0) {
           _this.playing = false;
           _this.breakTid = setTimeout((function() {
@@ -154,6 +156,19 @@ SakuraScriptPlayer = (function() {
           case reg["YY"].test(script):
             _script = script.replace(reg["YY"], "");
             _this.named.scope().blimp().talk("\\");
+            break;
+          case reg["Ycom"].test(script):
+            _script = script.replace(reg["Ycom"], "");
+            setTimeout((function() {
+              return _this.named.openCommunicateBox();
+            }), 2000);
+            break;
+          case reg["Yinp"].test(script):
+            _script = script.replace(reg["Yinp"], "");
+            _ref1 = reg["Yinp"].exec(script), id = _ref1[0], time = _ref1[1], text = _ref1[2];
+            setTimeout((function() {
+              return _this.named.openInputBox(id, text);
+            }), 2000);
             break;
           default:
             _script = script.slice(1);

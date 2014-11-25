@@ -14,3 +14,4 @@
 + \\w8, \\_w[800], \\_q, \\t
 + \\q[title, id], \\_a[id]
 + \\e, \\\\
++ \\![open,communicatebox], \\![open,inputbox,id,wait,text]

@@ -41,8 +41,8 @@ class SakuraScriptPlayer
       "Yc": /^\\c/
       "Ye": /^\\e/
       "YY": /^\\\\/
-      "Ycom": /^\\\!\[open\,communicatebox\]/
-      "Yinp": /^\\\!\[open\,inputbox\,([^\,]+)\,(\d+)\,([^\,]+)\]/
+      "Ycom": /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/
+      "Yinp": /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\,]+)(?:\,([^\,]+)\,([^\,]+))?\]/
 
     do recur = =>
       if script.length is 0

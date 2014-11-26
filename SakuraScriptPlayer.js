@@ -49,8 +49,8 @@ SakuraScriptPlayer = (function() {
       "Yc": /^\\c/,
       "Ye": /^\\e/,
       "YY": /^\\\\/,
-      "Ycom": /^\\\!\[open\,communicatebox\]/,
-      "Yinp": /^\\\!\[open\,inputbox\,([^\,]+)\,(\d+)\,([^\,]+)\]/
+      "Ycom": /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/,
+      "Yinp": /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\,]+)(?:\,([^\,]+)\,([^\,]+))?\]/
     };
     (recur = (function(_this) {
       return function() {

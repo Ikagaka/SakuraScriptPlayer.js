@@ -1,97 +1,77 @@
-
-
 class SakuraScriptPlayer
-  constructor: (@named)->
-    @playing = false
-    @breakTid = 0
-    @timeCritical = false
+	constructor: (@named)->
+		@playing = false
+		@breakTid = 0
+		@timeCritical = false
 
-  play: (script, callback=->)->
-    if @playing and @timeCritical
-      setTimeout -> callback(true)
-      return
-    @break()
-    @playing = true
-    @timeCritical = false
+	play: (script, callback=->)->
+		if @playing and @timeCritical # called when time critical section
+			setTimeout -> callback(true)
+			return
+		@break()
+		@playing = true
+		@timeCritical = false
+		@quick = false
 
-    quick = false
-    wait = 80
+		tags = [
+			{re: /^\\[h0]/, match: (group) -> @named.scope(0).blimp(0)}
+			{re: /^\\[u1]/, match: (group) -> @named.scope(1).blimp(0)}
+			{re: /^\\p\[(\d+)\]/, match: (group) -> @named.scope(Number group[1])}
+			{re: /^\\p(\d)/, match: (group) -> @named.scope(Number group[1])}
+			{re: /^\\s(\d)/, match: (group) -> @named.scope().surface(Number group[1])}
+			{re: /^\\s\[([^\]]+)\]/, match: (group) -> @named.scope().surface(Number group[1])}
+			{re: /^\\b(\d)/, match: (group) -> @named.scope().blimp(Number group[1])}
+			{re: /^\\b\[([^\]]+)\]/, match: (group) -> @named.scope().blimp(Number group[1])}
+			{re: /^\\i(\d)/, match: (group) -> @named.scope().surface().playAnimation(Number group[1])}
+			{re: /^\\i\[(\d+)\]/, match: (group) -> @named.scope().surface().playAnimation(Number group[1])}
+			{re: /^\\w(\d+)/, match: (group) -> @wait = Number(group[1])*100}
+			{re: /^\\\_w\[(\d+)\]/, match: (group) -> @wait = Number(group[1])}
+			{re: /^\\\_q/, match: (group) -> @quick = !@quick}
+			{re: /^\\t/, match: (group) -> @timeCritical = true}
+#			{re: /^\\x/, match: (group) -> }
+			{re: /^\\q\[([^\]]+)\]/, match: (group) -> [title, id] = group[1].split(",", 2); @named.scope().blimp().choice(title, id)}
+			{re: /^\\_a\[([^\]]+)\]/, match: (group) -> @named.scope().blimp().anchorBegin(group[1])}
+			{re: /^\\_a/, match: (group) -> @named.scope().blimp().anchorEnd()}
+			{re: /^\\n\[half\]/, match: (group) -> @named.scope().blimp().br()}
+			{re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
+			{re: /^\\c/, match: (group) -> @named.scope().blimp().clear()}
+			{re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface()?.YenE()}
+			{re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
+			{re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
+			{re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(group[1].split(/\s*\,\s*/)[0]) ), 2000)}
+			{re: /^\\[45Cx67+v8]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+			{re: /^\\!\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+			{re: /^./, match: (group) -> @named.scope().blimp().talk(group[0])}
+		]
 
-    reg =
-      "Y0": /^\\0/
-      "Y1": /^\\1/
-      "Yh": /^\\h/
-      "Yu": /^\\u/
-      "Yp": /^\\p\[(\d+)\]/
-      "Ypn": /^\\p(\d)/
-      "Ysn": /^\\s(\d)/
-      "Ys": /^\\s\[([^\]]+)\]/
-      "Yb": /^\\b\[([^\]]+)\]/
-      "Yi": /^\\i\[(\d+)\]/
-      "YwN": /^\\w(\d+)/
-      "Y_w": /^\\\_w\[(\d+)\]/
-      "Y_q": /^\\\_q/
-      "Yt": /^\\t/
-      "Yx": /^\\x/
-      "Yq": /^\\q\[([^\]]+)\]/
-      "Y_aB":/^\\_a\[([^\]]+)\]/
-      "Y_aE":/^\\_a/
-      "YnH": /^\\n\[half\]/
-      "Yn": /^\\n/
-      "Yc": /^\\c/
-      "Ye": /^\\e/
-      "YY": /^\\\\/
-      "Ycom": /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/
-      "Yinp": /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/
+		do recur = =>
+			if script.length is 0
+				@playing = false
+			if not @playing
+				@breakTid = setTimeout (=> @break() ), 10000
+				return
+			@wait = 80
+			for tag in tags
+				if tag.re.test(script)
+					script = script.replace tag.re, (group..., offset, all) =>
+						tag.match.call @, group # do func
+						return '' # delete matched
+					break
+			@breakTid = setTimeout recur, if @quick then 0 else @wait
+		undefined
 
-    do recur = =>
-      if script.length is 0
-        @playing = false
-        @breakTid = setTimeout((=> @break() ), 10000)
-        return
-      wait = 80
-      switch true
-        when reg["Y0"].test(script)  then _script = script.replace(reg["Y0"],  ""); @named.scope(0).blimp(0)
-        when reg["Y1"].test(script)  then _script = script.replace(reg["Y1"],  ""); @named.scope(1).blimp(0)
-        when reg["Yh"].test(script)  then _script = script.replace(reg["Yh"],  ""); @named.scope(0).blimp(0)
-        when reg["Yu"].test(script)  then _script = script.replace(reg["Yu"],  ""); @named.scope(1).blimp(0)
-        when reg["Yp"].test(script)  then _script = script.replace(reg["Yp"],  ""); @named.scope(Number(reg["Yp"].exec(script)[1]))
-        when reg["Ypn"].test(script) then _script = script.replace(reg["Ypn"], ""); @named.scope(Number(reg["Ypn"].exec(script)[1]))
-        when reg["Ysn"].test(script) then _script = script.replace(reg["Ysn"], ""); @named.scope().surface(Number(reg["Ysn"].exec(script)[1]))
-        when reg["Ys"].test(script)  then _script = script.replace(reg["Ys"],  ""); @named.scope().surface(Number(reg["Ys"].exec(script)[1]))
-        when reg["Yb"].test(script)  then _script = script.replace(reg["Yb"],  ""); @named.scope().blimp(Number(reg["Yb"].exec(script)[1]))
-        when reg["Yi"].test(script)  then _script = script.replace(reg["Yi"],  ""); @named.scope().surface().playAnimation(Number(reg["Yi"].exec(script)[1]))
-        when reg["Y_q"].test(script) then _script = script.replace(reg["Y_q"], ""); quick = !quick
-        when reg["YwN"].test(script) then _script = script.replace(reg["YwN"], ""); wait = Number(reg["YwN"].exec(script)[1])*100
-        when reg["Y_w"].test(script) then _script = script.replace(reg["Y_w"], ""); wait = Number(reg["Y_w"].exec(script)[1])
-        when reg["Yt"].test(script)  then _script = script.replace(reg["Yt"],  ""); @timeCritical = true
-        when reg["Yq"].test(script)  then _script = script.replace(reg["Yq"],  ""); [title, id] = reg["Yq"].exec(script)[1].split(",", 2); @named.scope().blimp().choice(title, id)
-        when reg["Y_aB"].test(script)then _script = script.replace(reg["Y_aB"],""); id = reg["Y_aB"].exec(script)[1]; @named.scope().blimp().anchorBegin(id)
-        when reg["Y_aE"].test(script)then _script = script.replace(reg["Y_aE"],""); @named.scope().blimp().anchorEnd()
-        when reg["YnH"].test(script) then _script = script.replace(reg["YnH"], ""); @named.scope().blimp().br()
-        when reg["Yn"].test(script)  then _script = script.replace(reg["Yn"],  ""); @named.scope().blimp().br()
-        when reg["Yc"].test(script)  then _script = script.replace(reg["Yc"],  ""); @named.scope().blimp().clear()
-        when reg["Ye"].test(script)  then _script = "";                             @named.scopes.forEach (scope)-> scope.surface()?.YenE()
-        when reg["YY"].test(script)  then _script = script.replace(reg["YY"],  ""); @named.scope().blimp().talk("\\")
-        when reg["Ycom"].test(script)then _script = script.replace(reg["Ycom"],""); setTimeout((=> @named.openCommunicateBox() ), 2000)
-        when reg["Yinp"].test(script)then _script = script.replace(reg["Yinp"],""); [id] = reg["Yinp"].exec(script)[1].split(/\s*\,\s*/); setTimeout((=> @named.openInputBox(id) ), 2000)
-        else                              _script = script.slice(1);                @named.scope().blimp().talk(script[0])
-      script = _script
-      wait = (if quick then 0 else wait)
-      @breakTid = setTimeout(recur, wait)
-    undefined
-
-  break: ->
-    @playing = false
-    @timeCritical = false
-    clearTimeout(@breakTid)
-    @named.scopes.forEach (scope)->
-      scope.blimp(-1).clear()
-    undefined
+	break: ->
+		@playing = false
+		@timeCritical = false
+		clearTimeout(@breakTid)
+		@named.scopes.forEach (scope)->
+			scope.blimp(-1).clear()
+		undefined
 
 
 if module?.exports?
-  module.exports = SakuraScriptPlayer
-
-if window["Ikagaka"]?
-  window["Ikagaka"]["SakuraScriptPlayer"] = SakuraScriptPlayer
+	module.exports = SakuraScriptPlayer
+else if @Ikagaka?
+	@Ikagaka.SakuraScriptPlayer = SakuraScriptPlayer
+else
+	@SakuraScriptPlayer = SakuraScriptPlayer

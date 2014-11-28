@@ -23,8 +23,8 @@ SakuraScript: <input type="text" value="\0\s[0]Hello World!\w8\n\1\s[10]Hello We
 
 Promise.all([
   new Promise(function(resolve, reject){
-    var nar = new Nar();
-    nar.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vender/mobilemaster.nar", function(err){
+    var narloader = new NarLoader();
+    narloader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vender/mobilemaster.nar", function(err, nar){
       if(!!err) return reject(err);
       var shell = new Shell(nar.getDirectory(/shell\/master\//));
       shell.load(function(err){
@@ -34,8 +34,8 @@ Promise.all([
     });
   }),
   new Promise(function(resolve, reject){
-    var nar = new Nar();
-    nar.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vender/origin.nar", function(err){
+    var narloader = new NarLoader();
+    narloader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vender/origin.nar", function(err, nar){
       if(!!err) return reject(err);
       var balloon = new Balloon(nar.directory);
       balloon.load(function(err){
@@ -58,8 +58,8 @@ Promise.all([
     });
 
   $("#nar").change(function(ev){
-    var nar = new Nar();
-    nar.loadFromBlob(ev.target.files[0], function(err){
+    var narloader = new NarLoader();
+    narloader.loadFromBlob(ev.target.files[0], function(err, nar){
       if(!!err) return console.error(err.stack);
       var shell = new Shell(nar.getDirectory(/shell\/master\//));
       shell.load(function(err){

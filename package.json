@@ -5,8 +5,8 @@
   "url":            "https://github.com/ikagaka/SakuraScriptPlayer.js",
   "keywords":       ["ikagaka", "unstable", "ukagaka"],
   "scripts": {
-    "watch": "coffee -cbw ./*.coffee",
-    "build": "coffee -cb ./*.coffee"
+    "watch": "coffee -cw ./*.coffee",
+    "build": "coffee -c ./*.coffee"
   },
   "repository": {
     "type":         "git",

@@ -1,0 +1,12 @@
+{
+	"name": "ikagaka.sakurascriptplayer.js",
+	"description": "Ikagaka SakuraScript Plater",
+	"dependencies": {
+		"ikagaka.named.js": "Ikagaka/Named.js",
+	},
+	"exportsOverride": {
+		"ikagaka.named.js": {
+			"js": ["Named.js", "Scope.js"]
+		}
+	}
+}

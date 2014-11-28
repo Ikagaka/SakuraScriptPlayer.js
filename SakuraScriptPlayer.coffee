@@ -42,7 +42,7 @@ class SakuraScriptPlayer
       "Ye": /^\\e/
       "YY": /^\\\\/
       "Ycom": /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/
-      "Yinp": /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\,]+)(?:\,([^\,]+)\,([^\,]+))?\]/
+      "Yinp": /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/
 
     do recur = =>
       if script.length is 0
@@ -74,7 +74,7 @@ class SakuraScriptPlayer
         when reg["Ye"].test(script)  then _script = "";                             @named.scopes.forEach (scope)-> scope.surface()?.YenE()
         when reg["YY"].test(script)  then _script = script.replace(reg["YY"],  ""); @named.scope().blimp().talk("\\")
         when reg["Ycom"].test(script)then _script = script.replace(reg["Ycom"],""); setTimeout((=> @named.openCommunicateBox() ), 2000)
-        when reg["Yinp"].test(script)then _script = script.replace(reg["Yinp"],""); [id, time, text] = reg["Yinp"].exec(script); setTimeout((=> @named.openInputBox(id, text) ), 2000)
+        when reg["Yinp"].test(script)then _script = script.replace(reg["Yinp"],""); [id] = reg["Yinp"].exec(script)[1].split(/\s*\,\s*/); setTimeout((=> @named.openInputBox(id) ), 2000)
         else                              _script = script.slice(1);                @named.scope().blimp().talk(script[0])
       script = _script
       wait = (if quick then 0 else wait)

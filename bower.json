@@ -2,7 +2,7 @@
 	"name": "ikagaka.sakurascriptplayer.js",
 	"description": "Ikagaka SakuraScript Plater",
 	"dependencies": {
-		"ikagaka.named.js": "Ikagaka/Named.js",
+		"ikagaka.named.js": "Ikagaka/Named.js"
 	},
 	"main": "SakuraScriptPlayer.js",
 	"ignore": [

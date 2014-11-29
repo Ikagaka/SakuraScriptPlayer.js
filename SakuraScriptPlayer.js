@@ -9,6 +9,7 @@
       this.playing = false;
       this.breakTid = 0;
       this.timeCritical = false;
+      this.wait_default = 80;
     }
 
     SakuraScriptPlayer.prototype.play = function(script, listener) {
@@ -189,13 +190,44 @@
             return this.named.scope().blimp().talk(group[0]);
           }
         }, {
+          re: /^\\_[ns+V]/,
+          match: function(group) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\__[qt]/,
+          match: function(group) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\[f8j]\[.*?\]/,
+          match: function(group) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\_[bl!?s]\[.*?\]/,
+          match: function(group) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\__[wq]\[.*?\]/,
+          match: function(group) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
           re: /^\\!\[.*?\]/,
+          match: function(group) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\!_[v]\[.*?\]/,
           match: function(group) {
             return this.named.scope().blimp().talk(group[0]);
           }
         }, {
           re: /^./,
           match: function(group) {
+            this.wait = this.wait_default;
             return this.named.scope().blimp().talk(group[0]);
           }
         }
@@ -214,7 +246,7 @@
             }, 10000);
             return;
           }
-          _this.wait = 80;
+          _this.wait = 0;
           tag = tags.find(function(tag) {
             return tag.re.test(script);
           });

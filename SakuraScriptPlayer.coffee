@@ -3,6 +3,7 @@ class SakuraScriptPlayer
     @playing = false
     @breakTid = 0
     @timeCritical = false
+    @wait_default = 80
 
   play: (script, listener={})->
     if @playing and @timeCritical # called when time critical section
@@ -47,8 +48,14 @@ class SakuraScriptPlayer
       {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}
       {re: /^\\\!\[\s*raise\s*\,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @trigger_all('script:raise', listener, splitargs(group[1])) ), 0)}
       {re: /^\\[45Cx67+v8]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+      {re: /^\\_[ns+V]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+      {re: /^\\__[qt]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+      {re: /^\\[f8j]\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+      {re: /^\\_[bl!?s]\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+      {re: /^\\__[wq]\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\!\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^./, match: (group) -> @named.scope().blimp().talk(group[0])}
+      {re: /^\\!_[v]\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
+      {re: /^./, match: (group) -> @wait = @wait_default; @named.scope().blimp().talk(group[0])}
     ]
 
     do recur = =>
@@ -61,7 +68,7 @@ class SakuraScriptPlayer
           @break()
         , 10000
         return
-      @wait = 80
+      @wait = 0
       tag = tags.find (tag)-> tag.re.test(script)
       if tag?
         script = script.replace tag.re, (group..., offset, all) =>

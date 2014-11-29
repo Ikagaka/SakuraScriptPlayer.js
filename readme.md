@@ -9,9 +9,11 @@
 ## SakuraScript
 
 + \\0, \\1, \\h, \\u, \\p0 \\p[0]
-+ \\s0, \\s[0], \\i[0]
-+ \\b[0], \\c, \\n, \\n[half]
++ \\s0, \\s[0], \\i0, \\i[0]
++ \\b0, \\b[0], \\c, \\n, \\n[half]
 + \\w8, \\_w[800], \\_q, \\t
-+ \\q[title, id], \\_a[id]
-+ \\e, \\\\
++ \\q[], \\__q[] \\_a[]
++ \\e, \\-, \\\\
 + \\![open,communicatebox], \\![open,inputbox,id,wait,text]
++ \\![raise]
++ \_u[], \_m[], \&[]

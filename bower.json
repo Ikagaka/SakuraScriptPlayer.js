@@ -4,6 +4,15 @@
 	"dependencies": {
 		"ikagaka.named.js": "Ikagaka/Named.js",
 	},
+	"main": "SakuraScriptPlayer.js",
+	"ignore": [
+		"**/.*",
+		"bower_components",
+		"node_modules",
+		"npm-debug.log",
+		"coverage",
+		"vender"
+	],
 	"exportsOverride": {
 		"ikagaka.named.js": {
 			"js": ["Named.js", "Scope.js"]

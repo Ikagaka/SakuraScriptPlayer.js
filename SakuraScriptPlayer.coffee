@@ -27,8 +27,8 @@ class SakuraScriptPlayer
       {re: /^\\s\[([^\]]+)\]/, match: (group) -> @named.scope().surface(Number group[1])}
       {re: /^\\b(\d)/, match: (group) -> @named.scope().blimp(Number group[1])}
       {re: /^\\b\[([^\]]+)\]/, match: (group) -> @named.scope().blimp(Number group[1])}
-      {re: /^\\i(\d)/, match: (group) -> @named.scope().surface().playAnimation(Number group[1])}
-      {re: /^\\i\[(\d+)\]/, match: (group) -> @named.scope().surface().playAnimation(Number group[1])}
+      {re: /^\\i(\d)/, match: (group) -> @named.scope().surface().play(Number group[1])}
+      {re: /^\\i\[(\d+)\]/, match: (group) -> @named.scope().surface().play(Number group[1])}
       {re: /^\\w(\d+)/, match: (group) -> @wait = Number(group[1])*100}
       {re: /^\\\_w\[(\d+)\]/, match: (group) -> @wait = Number(group[1])}
       {re: /^\\\_q/, match: (group) -> @quick = !@quick}

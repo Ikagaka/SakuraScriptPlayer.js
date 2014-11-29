@@ -75,12 +75,12 @@
         }, {
           re: /^\\i(\d)/,
           match: function(group) {
-            return this.named.scope().surface().playAnimation(Number(group[1]));
+            return this.named.scope().surface().play(Number(group[1]));
           }
         }, {
           re: /^\\i\[(\d+)\]/,
           match: function(group) {
-            return this.named.scope().surface().playAnimation(Number(group[1]));
+            return this.named.scope().surface().play(Number(group[1]));
           }
         }, {
           re: /^\\w(\d+)/,

@@ -12,7 +12,7 @@
     }
 
     SakuraScriptPlayer.prototype.play = function(script, listener) {
-      var recur, tags;
+      var recur, splitargs, tags;
       if (listener == null) {
         listener = {};
       }
@@ -24,6 +24,13 @@
       this.playing = true;
       this.timeCritical = false;
       this.quick = false;
+      splitargs = function(str) {
+        return str.replace(/"((?:\\\\|\\"|[^"])*)"/g, function(all, quoted) {
+          return quoted.replace(/,/g, '\0');
+        }).split(/\s*\,\s*/).map(function(arg) {
+          return arg.replace(/\0/g, ',');
+        });
+      };
       tags = [
         {
           re: /^\\[h0]/,
@@ -159,13 +166,22 @@
             })(this)), 2000);
           }
         }, {
-          re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/,
+          re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,((?:\\\\|\\\]|[^\]])+)\]/,
           match: function(group) {
             return setTimeout(((function(_this) {
               return function() {
-                return _this.named.openInputBox(group[1].split(/\s*\,\s*/)[0]);
+                return _this.named.openInputBox(splitargs(group[1])[0]);
               };
             })(this)), 2000);
+          }
+        }, {
+          re: /^\\\!\[\s*raise\s*\,\s*((?:\\\\|\\\]|[^\]])+)\]/,
+          match: function(group) {
+            return setTimeout(((function(_this) {
+              return function() {
+                return _this.trigger_all('script:raise', listener, splitargs(group[1]));
+              };
+            })(this)), 0);
           }
         }, {
           re: /^\\[45Cx67+v8]/,
@@ -264,30 +280,27 @@
       return this;
     };
 
-    SakuraScriptPlayer.prototype.trigger = function() {
-      var args, callback, event, _i, _len, _ref, _ref1;
-      event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    SakuraScriptPlayer.prototype.trigger = function(event, arg) {
+      var callback, _i, _len, _ref, _ref1;
       if (((_ref = this.listener) != null ? _ref[event] : void 0) != null) {
         _ref1 = this.listener[event];
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           callback = _ref1[_i];
           setTimeout((function() {
-            return callback(args);
+            return callback(arg);
           }), 0);
         }
       }
       return this;
     };
 
-    SakuraScriptPlayer.prototype.trigger_all = function() {
-      var args, event, listener;
-      event = arguments[0], listener = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+    SakuraScriptPlayer.prototype.trigger_all = function(event, listener, arg) {
       if ((listener != null ? listener[event] : void 0) != null) {
         setTimeout((function() {
-          return listener[event](args);
+          return listener[event](arg);
         }), 0);
       }
-      this.trigger(event, args);
+      this.trigger(event, arg);
       return this;
     };
 

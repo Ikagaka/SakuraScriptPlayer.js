@@ -13,6 +13,11 @@ class SakuraScriptPlayer
     @timeCritical = false
     @quick = false
 
+    splitargs = (str) ->
+      str
+      .replace /"((?:\\\\|\\"|[^"])*)"/g, (all, quoted) -> quoted.replace(/,/g,'\0')
+      .split /\s*\,\s*/
+      .map (arg) -> arg.replace /\0/g, ','
     tags = [
       {re: /^\\[h0]/, match: (group) -> @named.scope(0).blimp(0)}
       {re: /^\\[u1]/, match: (group) -> @named.scope(1).blimp(0)}
@@ -39,7 +44,8 @@ class SakuraScriptPlayer
       {re: /^\\-/, match: (group) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:destroy', listener)}
       {re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
-      {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(group[1].split(/\s*\,\s*/)[0]) ), 2000)}
+      {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}
+      {re: /^\\\!\[\s*raise\s*\,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @trigger_all('script:raise', listener, splitargs(group[1])) ), 0)}
       {re: /^\\[45Cx67+v8]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\!\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^./, match: (group) -> @named.scope().blimp().talk(group[0])}
@@ -99,16 +105,16 @@ class SakuraScriptPlayer
       delete @listener
     @
 
-  trigger: (event, args...) ->
+  trigger: (event, arg) ->
     if @listener?[event]?
       for callback in @listener[event]
-        setTimeout (-> callback(args)), 0
+        setTimeout (-> callback(arg)), 0
     @
 
-  trigger_all: (event, listener, args...) ->
+  trigger_all: (event, listener, arg) ->
     if listener?[event]?
-      setTimeout (-> listener[event](args)), 0
-    @trigger(event,args)
+      setTimeout (-> listener[event](arg)), 0
+    @trigger(event, arg)
     @
 
 if module?.exports?

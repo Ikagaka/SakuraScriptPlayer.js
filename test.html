@@ -17,7 +17,7 @@
 <script src="./node_modules/ikagaka.named.js/NamedManager.js"></script>
 <script src="./SakuraScriptPlayer.js"></script>
 nar: <input type="file" id="nar" /><br />
-SakuraScript: <input type="text" value="\0\s[0]Hello World!\w8\n\1\s[10]Hello Web Ghost!\n\e" id="SakuraScript"/>
+SakuraScript: <input type="text" value="\t\0\s[0]Hello World!\w8\![raise,OnTest,&#x22;1,2&#x22;,34,\[56\],\[7\\8\]]\n\1\s[10]Hello Web Ghost!\n\e" id="SakuraScript"/>
 <input type="button" value="play" id="Play"/>
 <script>
 Promise.all([
@@ -57,7 +57,8 @@ Promise.all([
   .on('finish',function(){console.log('finish')})
   .on('reject',function(){console.log('reject')})
   .on('close',function(){console.log('close')})
-  .on('script:destroy',function(){console.log('script:destroy')});
+  .on('script:destroy',function(){console.log('script:destroy')})
+  .on('script:raise',function(args){console.log('script:raise', args)});
   var ssps = [ssp];
 
   $(named.element).on("IkagakaSurfaceEvent", function(ev){
@@ -81,7 +82,8 @@ Promise.all([
         .on('finish',function(){console.log('finish')})
         .on('reject',function(){console.log('reject')})
         .on('close',function(){console.log('close')})
-        .on('script:destroy',function(){console.log('script:destroy')});
+        .on('script:destroy',function(){console.log('script:destroy')})
+        .on('script:raise',function(args){console.log('script:raise', args)});
         ssps.push(ssp);
         $(named.element).on("IkagakaSurfaceEvent", function(ev){
           console.log(ev.detail);
@@ -103,6 +105,7 @@ Promise.all([
         reject: function(){console.log('private', 'reject')},
         close: function(){console.log('private', 'close')},
         'script:destroy': function(){console.log('private', 'script:destroy')},
+        'script:raise': function(args){console.log('private', 'script:raise', args)},
       });
     });
   }).click();

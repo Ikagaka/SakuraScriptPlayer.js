@@ -35,8 +35,10 @@ class SakuraScriptPlayer
       {re: /^\\\_q/, match: (group) -> @quick = !@quick}
       {re: /^\\t/, match: (group) -> @timeCritical = true}
 #      {re: /^\\x/, match: (group) -> }
-      {re: /^\\q\[([^\]]+)\]/, match: (group) -> [title, id] = group[1].split(",", 2); @named.scope().blimp().choice(title, id)}
-      {re: /^\\_a\[([^\]]+)\]/, match: (group) -> @named.scope().blimp().anchorBegin(group[1])}
+      {re: /^\\q\[([^\]]+)\]/, match: (group) -> blimp = @named.scope().blimp(); blimp.choice.apply(blimp, splitargs(group[1]))}
+      {re: /^\\__q\[([^\]]+)\]/, match: (group) -> blimp = @named.scope().blimp(); blimp.choiceBegin.apply(blimp, splitargs(group[1]))}
+      {re: /^\\__q/, match: (group) -> @named.scope().blimp().choiceEnd()}
+      {re: /^\\_a\[([^\]]+)\]/, match: (group) -> blimp = @named.scope().blimp(); blimp.anchorBegin.apply(blimp, splitargs(group[1]))}
       {re: /^\\_a/, match: (group) -> @named.scope().blimp().anchorEnd()}
       {re: /^\\n\[half\]/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
@@ -47,6 +49,9 @@ class SakuraScriptPlayer
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}
       {re: /^\\\!\[\s*raise\s*\,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @trigger_all('script:raise', listener, splitargs(group[1])) ), 0)}
+      {re: /^\\_u\[0x(\d+)\]/, match: (group) -> @wait = @wait_default; @named.scope().blimp().talk('&#x'+group[1]+';')}
+      {re: /^\\_m\[0x(\d+)\]/, match: (group) -> @wait = @wait_default; @named.scope().blimp().talk('&#x'+group[1]+';')}
+      {re: /^\\&\[([^\]]+)\]/, match: (group) -> @wait = @wait_default; @named.scope().blimp().talk('&'+group[1]+';')}
       {re: /^\\[45Cx67+v8]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\_[ns+V]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\__[qt]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick

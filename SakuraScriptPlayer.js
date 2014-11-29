@@ -106,14 +106,28 @@
         }, {
           re: /^\\q\[([^\]]+)\]/,
           match: function(group) {
-            var id, title, _ref;
-            _ref = group[1].split(",", 2), title = _ref[0], id = _ref[1];
-            return this.named.scope().blimp().choice(title, id);
+            var blimp;
+            blimp = this.named.scope().blimp();
+            return blimp.choice.apply(blimp, splitargs(group[1]));
+          }
+        }, {
+          re: /^\\__q\[([^\]]+)\]/,
+          match: function(group) {
+            var blimp;
+            blimp = this.named.scope().blimp();
+            return blimp.choiceBegin.apply(blimp, splitargs(group[1]));
+          }
+        }, {
+          re: /^\\__q/,
+          match: function(group) {
+            return this.named.scope().blimp().choiceEnd();
           }
         }, {
           re: /^\\_a\[([^\]]+)\]/,
           match: function(group) {
-            return this.named.scope().blimp().anchorBegin(group[1]);
+            var blimp;
+            blimp = this.named.scope().blimp();
+            return blimp.anchorBegin.apply(blimp, splitargs(group[1]));
           }
         }, {
           re: /^\\_a/,
@@ -183,6 +197,24 @@
                 return _this.trigger_all('script:raise', listener, splitargs(group[1]));
               };
             })(this)), 0);
+          }
+        }, {
+          re: /^\\_u\[0x(\d+)\]/,
+          match: function(group) {
+            this.wait = this.wait_default;
+            return this.named.scope().blimp().talk('&#x' + group[1] + ';');
+          }
+        }, {
+          re: /^\\_m\[0x(\d+)\]/,
+          match: function(group) {
+            this.wait = this.wait_default;
+            return this.named.scope().blimp().talk('&#x' + group[1] + ';');
+          }
+        }, {
+          re: /^\\&\[([^\]]+)\]/,
+          match: function(group) {
+            this.wait = this.wait_default;
+            return this.named.scope().blimp().talk('&' + group[1] + ';');
           }
         }, {
           re: /^\\[45Cx67+v8]/,

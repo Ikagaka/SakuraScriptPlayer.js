@@ -16,6 +16,8 @@
     "ikagaka.named.js": ""
   },
   "devDependencies": {
+    "ikagaka.nar.js": "",
+    "es6-shim": ""
   },
   "main":           "./SakuraScriptPlayer.js",
   "author":         "Ikagaka",

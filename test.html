@@ -1,3 +1,4 @@
+<script src="./node_modules/es6-shim/es6-shim.js"></script>
 <script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/node_modules/encoding-japanese/encoding.js"></script>
 <script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vendor/jszip.min.js"></script>
 <script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vendor/XHRProxy.min.js"></script>
@@ -33,7 +34,7 @@ Promise.all([
   }),
   new Promise(function(resolve, reject){
     var loader = new Nar.Loader();
-    loader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vender/origin.nar", function(err, nar){
+    loader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vendor/origin.nar", function(err, nar){
       if(!!err) return reject(err);
       var balloon = new Balloon(nar.directory);
       balloon.load(function(err){
@@ -52,6 +53,11 @@ Promise.all([
   var nid = nmgr.materialize(shell, balloon);
   var named = nmgr.named(nid);
   var ssp = new SakuraScriptPlayer(named);
+  ssp
+  .on('finish',function(){console.log('finish')})
+  .on('reject',function(){console.log('reject')})
+  .on('close',function(){console.log('close')})
+  .on('script:destroy',function(){console.log('script:destroy')});
   var ssps = [ssp];
 
   $(named.element).on("IkagakaSurfaceEvent", function(ev){
@@ -71,6 +77,11 @@ Promise.all([
         var named = nmgr.named(nid);
         console.log(named)
         var ssp = new SakuraScriptPlayer(named);
+        ssp
+        .on('finish',function(){console.log('finish')})
+        .on('reject',function(){console.log('reject')})
+        .on('close',function(){console.log('close')})
+        .on('script:destroy',function(){console.log('script:destroy')});
         ssps.push(ssp);
         $(named.element).on("IkagakaSurfaceEvent", function(ev){
           console.log(ev.detail);
@@ -87,7 +98,12 @@ Promise.all([
     console.log(SakuraScript);
 
     ssps.forEach(function(ssp){
-      ssp.play(SakuraScript);
+      ssp.play(SakuraScript, {
+        finish: function(){console.log('private', 'finish')},
+        reject: function(){console.log('private', 'reject')},
+        close: function(){console.log('private', 'close')},
+        'script:destroy': function(){console.log('private', 'script:destroy')},
+      });
     });
   }).click();
 

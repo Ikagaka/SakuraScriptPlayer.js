@@ -4,9 +4,9 @@ class SakuraScriptPlayer
     @breakTid = 0
     @timeCritical = false
 
-  play: (script, callback=->)->
+  play: (script, listener={})->
     if @playing and @timeCritical # called when time critical section
-      setTimeout -> callback(true)
+      @trigger_all 'reject', listener
       return
     @break()
     @playing = true
@@ -36,6 +36,7 @@ class SakuraScriptPlayer
       {re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\c/, match: (group) -> @named.scope().blimp().clear()}
       {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
+      {re: /^\\-/, match: (group) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:destroy', listener)}
       {re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(group[1].split(/\s*\,\s*/)[0]) ), 2000)}
@@ -48,7 +49,11 @@ class SakuraScriptPlayer
       if script.length is 0
         @playing = false
       if not @playing
-        @breakTid = setTimeout (=> @break() ), 10000
+        @trigger_all 'finish', listener
+        @breakTid = setTimeout =>
+          @trigger_all 'close', listener
+          @break()
+        , 10000
         return
       @wait = 80
       tag = tags.find (tag)-> tag.re.test(script)
@@ -67,6 +72,44 @@ class SakuraScriptPlayer
       scope.blimp(-1).clear()
     return
 
+  on: (event, callback) ->
+    unless event? and callback? then throw Error 'on() event and callback required'
+    unless @listener?
+      @listener = {}
+    unless @listener[event]?
+      @listener[event] = []
+    if -1 == @listener[event].indexOf(callback)
+      @listener[event].push(callback)
+    @
+
+  off: (event, callback) ->
+    if event? and callback?
+      if @listener[event]?
+        index = @listener[event].indexOf(callback)
+        if index != -1
+          @listener[event].splice(index, 1)
+    else if event?
+      delete @listener[event]
+    else if callback?
+      for event of @listener
+        index = @listener[event].indexOf(callback)
+        if index != -1
+          @listener[event].splice(index, 1)
+    else
+      delete @listener
+    @
+
+  trigger: (event, args...) ->
+    if @listener?[event]?
+      for callback in @listener[event]
+        setTimeout (-> callback(args)), 0
+    @
+
+  trigger_all: (event, listener, args...) ->
+    if listener?[event]?
+      setTimeout (-> listener[event](args)), 0
+    @trigger(event,args)
+    @
 
 if module?.exports?
   module.exports = SakuraScriptPlayer

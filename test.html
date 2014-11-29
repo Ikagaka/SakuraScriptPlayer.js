@@ -58,7 +58,7 @@ Promise.all([
   .on('reject',function(){console.log('reject')})
   .on('close',function(){console.log('close')})
   .on('script:destroy',function(){console.log('script:destroy')})
-  .on('script:raise',function(args){console.log('script:raise', args, this)}, ssp);
+  .on('script:raise',function(args){console.log('script:raise', args)});
   var ssps = [ssp];
 
   $(named.element).on("IkagakaSurfaceEvent", function(ev){
@@ -83,7 +83,7 @@ Promise.all([
         .on('reject',function(){console.log('reject')})
         .on('close',function(){console.log('close')})
         .on('script:destroy',function(){console.log('script:destroy')})
-        .on('script:raise',function(args){console.log('script:raise', args, this)}, ssp);
+        .on('script:raise',function(args){console.log('script:raise', args)});
         ssps.push(ssp);
         $(named.element).on("IkagakaSurfaceEvent", function(ev){
           console.log(ev.detail);
@@ -101,12 +101,12 @@ Promise.all([
 
     ssps.forEach(function(ssp){
       ssp.play(SakuraScript, {
-        finish: function(){console.log('private', 'finish')},
-        reject: function(){console.log('private', 'reject')},
-        close: function(){console.log('private', 'close')},
-        'script:destroy': function(){console.log('private', 'script:destroy')},
-        'script:raise': function(args){console.log('private', 'script:raise', args, this)},
-      }, ssp);
+        finish: function(){console.log('session', 'finish')},
+        reject: function(){console.log('session', 'reject')},
+        close: function(){console.log('session', 'close')},
+        'script:destroy': function(){console.log('session', 'script:destroy')},
+        'script:raise': (function(args){console.log('session', 'script:raise', args, this)}).bind(ssp),
+      });
     });
   }).click();
 

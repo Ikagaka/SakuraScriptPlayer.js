@@ -35,7 +35,7 @@ class SakuraScriptPlayer
       {re: /^\\n\[half\]/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\c/, match: (group) -> @named.scope().blimp().clear()}
-      {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface()?.yenE()}
+      {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
       {re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(group[1].split(/\s*\,\s*/)[0]) ), 2000)}
@@ -51,14 +51,13 @@ class SakuraScriptPlayer
         @breakTid = setTimeout (=> @break() ), 10000
         return
       @wait = 80
-      for tag in tags
-        if tag.re.test(script)
-          script = script.replace tag.re, (group..., offset, all) =>
-            tag.match.call @, group # do func
-            return '' # delete matched
-          break
+      tag = tags.find (tag)-> tag.re.test(script)
+      if tag?
+        script = script.replace tag.re, (group..., offset, all) =>
+          tag.match.call @, group # do func
+          return '' # delete matched
       @breakTid = setTimeout recur, if @quick then 0 else @wait
-    undefined
+    return
 
   break: ->
     @playing = false
@@ -66,7 +65,7 @@ class SakuraScriptPlayer
     clearTimeout(@breakTid)
     @named.scopes.forEach (scope)->
       scope.blimp(-1).clear()
-    undefined
+    return
 
 
 if module?.exports?

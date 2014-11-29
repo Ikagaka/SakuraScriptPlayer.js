@@ -134,8 +134,7 @@
           match: function(group) {
             this.playing = false;
             return this.named.scopes.forEach(function(scope) {
-              var _ref;
-              return (_ref = scope.surface()) != null ? _ref.yenE() : void 0;
+              return scope.surface().yenE();
             });
           }
         }, {
@@ -180,7 +179,7 @@
       ];
       (recur = (function(_this) {
         return function() {
-          var tag, _i, _len;
+          var tag;
           if (script.length === 0) {
             _this.playing = false;
           }
@@ -191,17 +190,16 @@
             return;
           }
           _this.wait = 80;
-          for (_i = 0, _len = tags.length; _i < _len; _i++) {
-            tag = tags[_i];
-            if (tag.re.test(script)) {
-              script = script.replace(tag.re, function() {
-                var all, group, offset, _j;
-                group = 3 <= arguments.length ? __slice.call(arguments, 0, _j = arguments.length - 2) : (_j = 0, []), offset = arguments[_j++], all = arguments[_j++];
-                tag.match.call(_this, group);
-                return '';
-              });
-              break;
-            }
+          tag = tags.find(function(tag) {
+            return tag.re.test(script);
+          });
+          if (tag != null) {
+            script = script.replace(tag.re, function() {
+              var all, group, offset, _i;
+              group = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), offset = arguments[_i++], all = arguments[_i++];
+              tag.match.call(_this, group);
+              return '';
+            });
           }
           return _this.breakTid = setTimeout(recur, _this.quick ? 0 : _this.wait);
         };

@@ -4,9 +4,9 @@ class SakuraScriptPlayer
     @breakTid = 0
     @timeCritical = false
 
-  play: (script, listener={})->
+  play: (script, listener={}, context)->
     if @playing and @timeCritical # called when time critical section
-      @trigger_all 'reject', listener
+      @trigger_all 'reject', listener, context
       return
     @break()
     @playing = true
@@ -41,11 +41,11 @@ class SakuraScriptPlayer
       {re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\c/, match: (group) -> @named.scope().blimp().clear()}
       {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
-      {re: /^\\-/, match: (group) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:destroy', listener)}
+      {re: /^\\-/, match: (group) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:destroy', listener, context)}
       {re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}
-      {re: /^\\\!\[\s*raise\s*\,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @trigger_all('script:raise', listener, splitargs(group[1])) ), 0)}
+      {re: /^\\\!\[\s*raise\s*\,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @trigger_all('script:raise', listener, context, splitargs(group[1])) ), 0)}
       {re: /^\\[45Cx67+v8]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\!\[.*?\]/, match: (group) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^./, match: (group) -> @named.scope().blimp().talk(group[0])}
@@ -55,9 +55,9 @@ class SakuraScriptPlayer
       if script.length is 0
         @playing = false
       if not @playing
-        @trigger_all 'finish', listener
+        @trigger_all 'finish', listener, context
         @breakTid = setTimeout =>
-          @trigger_all 'close', listener
+          @trigger_all 'close', listener, context
           @break()
         , 10000
         return
@@ -78,43 +78,43 @@ class SakuraScriptPlayer
       scope.blimp(-1).clear()
     return
 
-  on: (event, callback) ->
+  on: (event, callback, context) ->
     unless event? and callback? then throw Error 'on() event and callback required'
     unless @listener?
       @listener = {}
     unless @listener[event]?
       @listener[event] = []
-    if -1 == @listener[event].indexOf(callback)
-      @listener[event].push(callback)
+    if not @listener[event].find((e) -> e.callback == callback and e.context == context)
+      @listener[event].push(callback: callback, context: context || null)
     @
 
-  off: (event, callback) ->
-    if event? and callback?
+  off: (event, callback, context) -> # undefined means any. context=null means null context
+    if event? and (callback? or context != undefined)
       if @listener[event]?
-        index = @listener[event].indexOf(callback)
+        index = @listener[event].findIndex((e) -> (callback? and e.callback == callback) and (context != undefined and e.context == context))
         if index != -1
           @listener[event].splice(index, 1)
     else if event?
       delete @listener[event]
-    else if callback?
+    else if callback? or context != undefined
       for event of @listener
-        index = @listener[event].indexOf(callback)
+        index = @listener[event].findIndex((e) -> (callback? and e.callback == callback) and (context != undefined and e.context == context))
         if index != -1
           @listener[event].splice(index, 1)
     else
       delete @listener
     @
 
-  trigger: (event, arg) ->
+  trigger: (event, args...) ->
     if @listener?[event]?
-      for callback in @listener[event]
-        setTimeout (-> callback(arg)), 0
+      for elem in @listener[event]
+        setTimeout (-> elem.callback.apply(elem.context || @, args)), 0
     @
 
-  trigger_all: (event, listener, arg) ->
+  trigger_all: (event, listener, context, args...) ->
     if listener?[event]?
-      setTimeout (-> listener[event](arg)), 0
-    @trigger(event, arg)
+      setTimeout (-> listener[event].apply(context || @, args)), 0
+    @trigger.apply(@, [event].concat(args))
     @
 
 if module?.exports?

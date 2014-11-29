@@ -58,7 +58,7 @@ Promise.all([
   .on('reject',function(){console.log('reject')})
   .on('close',function(){console.log('close')})
   .on('script:destroy',function(){console.log('script:destroy')})
-  .on('script:raise',function(args){console.log('script:raise', args)});
+  .on('script:raise',function(args){console.log('script:raise', args, this)}, ssp);
   var ssps = [ssp];
 
   $(named.element).on("IkagakaSurfaceEvent", function(ev){
@@ -83,7 +83,7 @@ Promise.all([
         .on('reject',function(){console.log('reject')})
         .on('close',function(){console.log('close')})
         .on('script:destroy',function(){console.log('script:destroy')})
-        .on('script:raise',function(args){console.log('script:raise', args)});
+        .on('script:raise',function(args){console.log('script:raise', args, this)}, ssp);
         ssps.push(ssp);
         $(named.element).on("IkagakaSurfaceEvent", function(ev){
           console.log(ev.detail);
@@ -105,8 +105,8 @@ Promise.all([
         reject: function(){console.log('private', 'reject')},
         close: function(){console.log('private', 'close')},
         'script:destroy': function(){console.log('private', 'script:destroy')},
-        'script:raise': function(args){console.log('private', 'script:raise', args)},
-      });
+        'script:raise': function(args){console.log('private', 'script:raise', args, this)},
+      }, ssp);
     });
   }).click();
 

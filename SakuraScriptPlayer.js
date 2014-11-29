@@ -11,13 +11,13 @@
       this.timeCritical = false;
     }
 
-    SakuraScriptPlayer.prototype.play = function(script, listener) {
+    SakuraScriptPlayer.prototype.play = function(script, listener, context) {
       var recur, splitargs, tags;
       if (listener == null) {
         listener = {};
       }
       if (this.playing && this.timeCritical) {
-        this.trigger_all('reject', listener);
+        this.trigger_all('reject', listener, context);
         return;
       }
       this["break"]();
@@ -149,7 +149,7 @@
             this.named.scopes.forEach(function(scope) {
               return scope.surface().yenE();
             });
-            return this.trigger_all('script:destroy', listener);
+            return this.trigger_all('script:destroy', listener, context);
           }
         }, {
           re: /^\\\\/,
@@ -179,7 +179,7 @@
           match: function(group) {
             return setTimeout(((function(_this) {
               return function() {
-                return _this.trigger_all('script:raise', listener, splitargs(group[1]));
+                return _this.trigger_all('script:raise', listener, context, splitargs(group[1]), null);
               };
             })(this)), 0);
           }
@@ -207,9 +207,9 @@
             _this.playing = false;
           }
           if (!_this.playing) {
-            _this.trigger_all('finish', listener);
+            _this.trigger_all('finish', listener, context);
             _this.breakTid = setTimeout(function() {
-              _this.trigger_all('close', listener);
+              _this.trigger_all('close', listener, context);
               return _this["break"]();
             }, 10000);
             return;
@@ -240,7 +240,7 @@
       });
     };
 
-    SakuraScriptPlayer.prototype.on = function(event, callback) {
+    SakuraScriptPlayer.prototype.on = function(event, callback, context) {
       if (!((event != null) && (callback != null))) {
         throw Error('on() event and callback required');
       }
@@ -250,26 +250,35 @@
       if (this.listener[event] == null) {
         this.listener[event] = [];
       }
-      if (-1 === this.listener[event].indexOf(callback)) {
-        this.listener[event].push(callback);
+      if (!this.listener[event].find(function(e) {
+        return e.callback === callback && e.context === context;
+      })) {
+        this.listener[event].push({
+          callback: callback,
+          context: context || null
+        });
       }
       return this;
     };
 
-    SakuraScriptPlayer.prototype.off = function(event, callback) {
+    SakuraScriptPlayer.prototype.off = function(event, callback, context) {
       var index;
-      if ((event != null) && (callback != null)) {
+      if ((event != null) && ((callback != null) || context !== void 0)) {
         if (this.listener[event] != null) {
-          index = this.listener[event].indexOf(callback);
+          index = this.listener[event].findIndex(function(e) {
+            return ((callback != null) && e.callback === callback) && (context !== void 0 && e.context === context);
+          });
           if (index !== -1) {
             this.listener[event].splice(index, 1);
           }
         }
       } else if (event != null) {
         delete this.listener[event];
-      } else if (callback != null) {
+      } else if ((callback != null) || context !== void 0) {
         for (event in this.listener) {
-          index = this.listener[event].indexOf(callback);
+          index = this.listener[event].findIndex(function(e) {
+            return ((callback != null) && e.callback === callback) && (context !== void 0 && e.context === context);
+          });
           if (index !== -1) {
             this.listener[event].splice(index, 1);
           }
@@ -280,27 +289,30 @@
       return this;
     };
 
-    SakuraScriptPlayer.prototype.trigger = function(event, arg) {
-      var callback, _i, _len, _ref, _ref1;
+    SakuraScriptPlayer.prototype.trigger = function() {
+      var args, elem, event, _i, _len, _ref, _ref1;
+      event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (((_ref = this.listener) != null ? _ref[event] : void 0) != null) {
         _ref1 = this.listener[event];
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          callback = _ref1[_i];
+          elem = _ref1[_i];
           setTimeout((function() {
-            return callback(arg);
+            return elem.callback.apply(elem.context || this, args);
           }), 0);
         }
       }
       return this;
     };
 
-    SakuraScriptPlayer.prototype.trigger_all = function(event, listener, arg) {
+    SakuraScriptPlayer.prototype.trigger_all = function() {
+      var args, context, event, listener;
+      event = arguments[0], listener = arguments[1], context = arguments[2], args = 4 <= arguments.length ? __slice.call(arguments, 3) : [];
       if ((listener != null ? listener[event] : void 0) != null) {
         setTimeout((function() {
-          return listener[event](arg);
+          return listener[event].apply(context || this, args);
         }), 0);
       }
-      this.trigger(event, arg);
+      this.trigger.apply(this, [event].concat(args));
       return this;
     };
 

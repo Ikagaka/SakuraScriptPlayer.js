@@ -1,7 +1,7 @@
 <script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/node_modules/encoding-japanese/encoding.js"></script>
-<script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vender/jszip.min.js"></script>
-<script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vender/XHRProxy.min.js"></script>
-<script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vender/WMDescript.js"></script>
+<script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vendor/jszip.min.js"></script>
+<script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vendor/XHRProxy.min.js"></script>
+<script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vendor/WMDescript.js"></script>
 <script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/Nar.js"></script>
 <script src="./node_modules/ikagaka.named.js/node_modules/zepto/zepto.min.js"></script>
 <script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/surfaces_txt2yaml/lib/surfaces_txt2yaml.js"></script>
@@ -13,18 +13,16 @@
 <script src="./node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/Balloon.js"></script>
 <script src="./node_modules/ikagaka.named.js/Scope.js"></script>
 <script src="./node_modules/ikagaka.named.js/Named.js"></script>
+<script src="./node_modules/ikagaka.named.js/NamedManager.js"></script>
 <script src="./SakuraScriptPlayer.js"></script>
 nar: <input type="file" id="nar" /><br />
 SakuraScript: <input type="text" value="\0\s[0]Hello World!\w8\n\1\s[10]Hello Web Ghost!\n\e" id="SakuraScript"/>
 <input type="button" value="play" id="Play"/>
 <script>
-
-
-
 Promise.all([
   new Promise(function(resolve, reject){
-    var narloader = new NarLoader();
-    narloader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vender/mobilemaster.nar", function(err, nar){
+    var loader = new Nar.Loader();
+    loader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.shell.js/node_modules/ikagaka.nar.js/vendor/mobilemaster.nar", function(err, nar){
       if(!!err) return reject(err);
       var shell = new Shell(nar.getDirectory(/shell\/master\//));
       shell.load(function(err){
@@ -34,8 +32,8 @@ Promise.all([
     });
   }),
   new Promise(function(resolve, reject){
-    var narloader = new NarLoader();
-    narloader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vender/origin.nar", function(err, nar){
+    var loader = new Nar.Loader();
+    loader.loadFromURL("./node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vender/origin.nar", function(err, nar){
       if(!!err) return reject(err);
       var balloon = new Balloon(nar.directory);
       balloon.load(function(err){
@@ -47,33 +45,37 @@ Promise.all([
 ]).then(function(tmp){
   var shell = tmp[0];
   var balloon = tmp[1];
-  var named = new Named(shell, balloon);
+
+  var nmgr = new NamedManager();
+  $(nmgr.element).appendTo("body");
+
+  var nid = nmgr.materialize(shell, balloon);
+  var named = nmgr.named(nid);
   var ssp = new SakuraScriptPlayer(named);
   var ssps = [ssp];
 
-  $(named.element)
-    .appendTo("body")
-    .on("IkagakaSurfaceEvent", function(ev){
-      console.log(ev.detail);
-    });
+  $(named.element).on("IkagakaSurfaceEvent", function(ev){
+    console.log(ev.detail);
+  });
 
   $("#nar").change(function(ev){
-    var narloader = new NarLoader();
-    narloader.loadFromBlob(ev.target.files[0], function(err, nar){
+    var loader = new Nar.Loader();
+    var file = ev.target.files[0];
+    loader.loadFromBlob(file, function(err, nar){
+      $("#nar").val(null);
       if(!!err) return console.error(err.stack);
       var shell = new Shell(nar.getDirectory(/shell\/master\//));
       shell.load(function(err){
         if(!!err) return console.error(err.stack);
-        var named = new Named(shell, balloon);
-        var ssp = new SakuraScriptPlayer(named);
+        var nid = nmgr.materialize(shell, balloon);
+        var named = nmgr.named(nid);
         console.log(named)
+        var ssp = new SakuraScriptPlayer(named);
         ssps.push(ssp);
-        $(named.element)
-          .appendTo("body")
-          .on("IkagakaSurfaceEvent", function(ev){
-            console.log(ev.detail);
-          });
-        ssp.play("\\0\\s[0]\\1\\s[10]")
+        $(named.element).on("IkagakaSurfaceEvent", function(ev){
+          console.log(ev.detail);
+        });
+        ssp.play("\\0\\s[0]\\1\\s[10]");
       });
     });
   });

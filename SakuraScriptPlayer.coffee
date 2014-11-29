@@ -35,7 +35,7 @@ class SakuraScriptPlayer
       {re: /^\\n\[half\]/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\c/, match: (group) -> @named.scope().blimp().clear()}
-      {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface()?.YenE()}
+      {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface()?.yenE()}
       {re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,([^\]]+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(group[1].split(/\s*\,\s*/)[0]) ), 2000)}

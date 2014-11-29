@@ -179,7 +179,7 @@
           match: function(group) {
             return setTimeout(((function(_this) {
               return function() {
-                return _this.trigger_all('script:raise', listener, context, splitargs(group[1]), null);
+                return _this.trigger_all('script:raise', listener, context, splitargs(group[1]));
               };
             })(this)), 0);
           }

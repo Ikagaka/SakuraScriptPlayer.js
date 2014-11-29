@@ -41,7 +41,7 @@ class SakuraScriptPlayer
       {re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\c/, match: (group) -> @named.scope().blimp().clear()}
       {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
-      {re: /^\\-/, match: (group) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:destroy', listener)}
+      {re: /^\\-/, match: (group) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:halt', listener)}
       {re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,((?:\\\\|\\\]|[^\]])+)\]/, match: (group) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}

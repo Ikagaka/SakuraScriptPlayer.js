@@ -149,7 +149,7 @@
             this.named.scopes.forEach(function(scope) {
               return scope.surface().yenE();
             });
-            return this.trigger_all('script:destroy', listener);
+            return this.trigger_all('script:halt', listener);
           }
         }, {
           re: /^\\\\/,

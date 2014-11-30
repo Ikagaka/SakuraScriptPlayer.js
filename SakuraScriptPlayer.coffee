@@ -41,7 +41,7 @@ class SakuraScriptPlayer
       {re: /^\\q\[([^\]]+)\]/, match: (group, state) -> state.has_choice = true; blimp = @named.scope().blimp(); blimp.choice.apply(blimp, splitargs(group[1]))}
       {re: /^\\__q\[([^\]]+)\]/, match: (group, state) -> state.has_choice = true; blimp = @named.scope().blimp(); blimp.choiceBegin.apply(blimp, splitargs(group[1]))}
       {re: /^\\__q/, match: (group, state) -> @named.scope().blimp().choiceEnd()}
-      {re: /^\\q\d+\[([^\]]+)\]\[([^\]]+)\]/, match: (group, state) -> state.has_choice = true; @named.scope().blimp().choice(group[2], group[1]); @named.scope().blimp().br()}
+      {re: /^\\q(?:\d+)?\[([^\]]+)\]\[([^\]]+)\]/, match: (group, state) -> state.has_choice = true; @named.scope().blimp().choice(group[2], group[1]); @named.scope().blimp().br()}
       {re: /^\\_a\[([^\]]+)\]/, match: (group, state) -> blimp = @named.scope().blimp(); blimp.anchorBegin.apply(blimp, splitargs(group[1]))}
       {re: /^\\_a/, match: (group, state) -> @named.scope().blimp().anchorEnd()}
       {re: /^\\n\[half\]/, match: (group, state) -> @named.scope().blimp().br()}

@@ -136,7 +136,7 @@
             return this.named.scope().blimp().choiceEnd();
           }
         }, {
-          re: /^\\q\d+\[([^\]]+)\]\[([^\]]+)\]/,
+          re: /^\\q(?:\d+)?\[([^\]]+)\]\[([^\]]+)\]/,
           match: function(group, state) {
             state.has_choice = true;
             this.named.scope().blimp().choice(group[2], group[1]);

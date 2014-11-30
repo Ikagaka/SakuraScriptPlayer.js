@@ -38,12 +38,13 @@ class SakuraScriptPlayer
       {re: /^\\q\[([^\]]+)\]/, match: (group) -> blimp = @named.scope().blimp(); blimp.choice.apply(blimp, splitargs(group[1]))}
       {re: /^\\__q\[([^\]]+)\]/, match: (group) -> blimp = @named.scope().blimp(); blimp.choiceBegin.apply(blimp, splitargs(group[1]))}
       {re: /^\\__q/, match: (group) -> @named.scope().blimp().choiceEnd()}
+      {re: /^\\q\d+\[([^\]]+)\]\[([^\]]+)\]/, match: (group) -> @named.scope().blimp().choice(group[2], group[1]); @named.scope().blimp().br()}
       {re: /^\\_a\[([^\]]+)\]/, match: (group) -> blimp = @named.scope().blimp(); blimp.anchorBegin.apply(blimp, splitargs(group[1]))}
       {re: /^\\_a/, match: (group) -> @named.scope().blimp().anchorEnd()}
       {re: /^\\n\[half\]/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\n/, match: (group) -> @named.scope().blimp().br()}
       {re: /^\\c/, match: (group) -> @named.scope().blimp().clear()}
-      {re: /^\\e/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
+      {re: /^\\[ez]/, match: (group) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
       {re: /^\\-/, match: (group) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:halt', listener)}
       {re: /^\\\\/, match: (group) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/, match: (group) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}

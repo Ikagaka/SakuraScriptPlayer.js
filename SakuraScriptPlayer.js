@@ -37,12 +37,12 @@
         {
           re: /^\\[h0]/,
           match: function(group, state) {
-            return this.named.scope(0).blimp(0);
+            return this.named.scope(0);
           }
         }, {
           re: /^\\[u1]/,
           match: function(group, state) {
-            return this.named.scope(1).blimp(0);
+            return this.named.scope(1);
           }
         }, {
           re: /^\\p\[(\d+)\]/,

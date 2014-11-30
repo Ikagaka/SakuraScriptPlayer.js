@@ -21,8 +21,8 @@ class SakuraScriptPlayer
       .split /\s*\,\s*/
       .map (arg) -> arg.replace /\0/g, ','
     tags = [
-      {re: /^\\[h0]/, match: (group, state) -> @named.scope(0).blimp(0)}
-      {re: /^\\[u1]/, match: (group, state) -> @named.scope(1).blimp(0)}
+      {re: /^\\[h0]/, match: (group, state) -> @named.scope(0)}
+      {re: /^\\[u1]/, match: (group, state) -> @named.scope(1)}
       {re: /^\\p\[(\d+)\]/, match: (group, state) -> @named.scope(Number group[1])}
       {re: /^\\p(\d)/, match: (group, state) -> @named.scope(Number group[1])}
       {re: /^\\s(\d)/, match: (group, state) -> @named.scope().surface(Number group[1])}

@@ -34,6 +34,7 @@ class SakuraScriptPlayer
       {re: /^\\w(\d+)/, match: (group, state) -> state.wait = Number(group[1])*100}
       {re: /^\\\_w\[(\d+)\]/, match: (group, state) -> state.wait = Number(group[1])}
       {re: /^\\\_q/, match: (group, state) -> state.quick = !state.quick}
+      {re: /^\\\_s/, match: (group, state) -> state.synchronized = !state.synchronized}
       {re: /^\\t/, match: (group, state) -> @timeCritical = true}
 #      {re: /^\\x/, match: (group, state) -> }
       {re: /^\\\!\[\s*set\s*,\s*choicetimeout\s*,\s*(-?\d+)\s*\]/, match: (group, state) -> state.choicetimeout = Number group[1]}
@@ -65,11 +66,12 @@ class SakuraScriptPlayer
       {re: /^\\__[wq]\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\!\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\!_[v]\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^./, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talk(group[0])}
+      {re: /^./, match: (group, state) -> state.wait = @wait_default; if not state.synchronized then @named.scope().blimp().talk(group[0]) else @named.scopes.forEach (scope) -> scope.blimp().talk(group[0])}
     ]
 
     state =
       quick: false
+      synchronized: false
       has_choice: false
 
     do recur = =>

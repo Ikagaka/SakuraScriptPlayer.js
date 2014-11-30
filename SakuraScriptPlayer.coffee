@@ -75,8 +75,10 @@ class SakuraScriptPlayer
       synchronized: false
       has_choice: false
 
-    scope.blimp(0) # clear balloon id
-    scope.blimp(-1) # hide init
+    @named.scopes.forEach (scope) ->
+      scope.blimp(0) # clear balloon id
+      scope.blimp(-1) # hide init
+
     do recur = =>
       if script.length is 0
         @playing = false

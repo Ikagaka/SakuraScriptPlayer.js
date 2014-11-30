@@ -317,8 +317,10 @@
         synchronized: false,
         has_choice: false
       };
-      scope.blimp(0);
-      scope.blimp(-1);
+      this.named.scopes.forEach(function(scope) {
+        scope.blimp(0);
+        return scope.blimp(-1);
+      });
       (recur = (function(_this) {
         return function() {
           var tag, timeout;

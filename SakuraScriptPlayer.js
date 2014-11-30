@@ -201,6 +201,15 @@
             })(this)), 2000);
           }
         }, {
+          re: /^\\__c/,
+          match: function(group, state) {
+            return setTimeout(((function(_this) {
+              return function() {
+                return _this.named.openCommunicateBox();
+              };
+            })(this)), 2000);
+          }
+        }, {
           re: /^\\\!\[\s*open\s*,\s*inputbox\s*,((?:\\\\|\\\]|[^\]])+)\]/,
           match: function(group, state) {
             return setTimeout(((function(_this) {

@@ -51,6 +51,7 @@ class SakuraScriptPlayer
       {re: /^\\-/, match: (group, state) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:halt', listener)}
       {re: /^\\\\/, match: (group, state) -> @named.scope().blimp().talk("\\")}
       {re: /^\\\!\[\s*open\s*,\s*communicatebox\s*\]/, match: (group, state) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
+      {re: /^\\__c/, match: (group, state) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*,\s*inputbox\s*,((?:\\\\|\\\]|[^\]])+)\]/, match: (group, state) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}
       {re: /^\\\!\[\s*raise\s*,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group, state) -> setTimeout((=> @trigger_all('script:raise', listener, splitargs(group[1])) ), 0)}
       {re: /^\\_u\[0x(\d+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talk('&#x'+group[1]+';')}

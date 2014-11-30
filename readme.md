@@ -13,7 +13,7 @@
 + \\0, \\1, \\h, \\u, \\p0 \\p[0]
 + \\s0, \\s[0], \\i0, \\i[0]
 + \\b0, \\b[0], \\c, \\n, \\n[half]
-+ \\w8, \\_w[800], \\_q, \\_s, \\t
++ \\w8, \\_w[800], \\_q, \\t, \\_s, \\_s[0,1,2]
 + \\q[], \\__q[], \\_a[], \\*, \\![set,choicetimeout,timeout], (\q[][]), (\q0[][])
 + \\e, \\-, \\\\, (\\z)
 + \\![open,communicatebox], \\![open,inputbox,id,wait,text], (\\__c)

@@ -339,7 +339,8 @@
       this.timeCritical = false;
       clearTimeout(this.breakTid);
       this.named.scopes.forEach(function(scope) {
-        return scope.blimp(-1).clear();
+        scope.blimp(0).clear();
+        return scope.blimp(-1);
       });
     };
 

@@ -98,7 +98,8 @@ class SakuraScriptPlayer
     @timeCritical = false
     clearTimeout(@breakTid)
     @named.scopes.forEach (scope)->
-      scope.blimp(-1).clear()
+      scope.blimp(0).clear() # clear balloon id
+      scope.blimp(-1)
     return
 
   on: (event, callback) ->

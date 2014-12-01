@@ -67,7 +67,7 @@ class SakuraScriptPlayer
       {re: /^\\__[wq]\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\!\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\!_[v]\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^./, match: (group, state) -> state.wait = @wait_default; if not state.synchronized then @named.scope().blimp().talk(group[0]) else state.synchronized.forEach (scopeid) -> @named.scopes[scopeid]?.blimp().talk(group[0])}
+      {re: /^./, match: (group, state) -> state.wait = @wait_default; if not state.synchronized then @named.scope().blimp().talk(group[0]) else state.synchronized.forEach (scopeid) => @named.scopes[scopeid]?.blimp().talk(group[0])}
     ]
 
     state =

@@ -6,6 +6,14 @@ class SakuraScriptPlayer
     @wait_default = 80
     @timeout_default = 15000
     @choicetimeout_default = 30000
+    @continue = null
+    $(@named.element).on "IkagakaSurfaceEvent", ({detail: {ID}})=>
+      if !!@continue and ID is "OnBalloonClick"
+        fn = @continue
+        @continue = null
+        fn()
+
+
 
   play: (script, listener={})->
     if @playing and @timeCritical # called when time critical section
@@ -37,7 +45,7 @@ class SakuraScriptPlayer
       {re: /^\\\_s/, match: (group, state) -> state.synchronized = if state.synchronized then false else [0, 1]}
       {re: /^\\\_s\[([^\]]+)\]/, match: (group, state) -> state.synchronized = if state.synchronized then false else splitargs(group[1]).map (n) -> Number(n)}
       {re: /^\\t/, match: (group, state) -> @timeCritical = true}
-#      {re: /^\\x/, match: (group, state) -> }
+      {re: /^\\x/, match: (group, state) -> state.click_wait = true; @named.scope(0)}
       {re: /^\\\!\[\s*set\s*,\s*choicetimeout\s*,\s*(-?\d+)\s*\]/, match: (group, state) -> state.choicetimeout = Number group[1]}
       {re: /^\\\*/, match: (group, state) -> state.choicetimeout = -1}
       {re: /^\\q\[([^\]]+)\]/, match: (group, state) -> state.has_choice = true; blimp = @named.scope().blimp(); blimp.choice.apply(blimp, splitargs(group[1]))}
@@ -74,6 +82,7 @@ class SakuraScriptPlayer
       quick: false
       synchronized: false
       has_choice: false
+      click_wait: false
 
     @named.scopes.forEach (scope) ->
       scope.blimp(0) # clear balloon id
@@ -97,7 +106,10 @@ class SakuraScriptPlayer
         script = script.replace tag.re, (group..., offset, all) =>
           tag.match.call @, group, state # do func
           return '' # delete matched
-      @breakTid = setTimeout recur, if state.quick then 0 else state.wait
+      if state.click_wait
+        @continue = -> state.click_wait = false; recur()
+      else
+        @breakTid = setTimeout recur, if state.quick then 0 else state.wait
     return
 
   break: ->
@@ -105,6 +117,7 @@ class SakuraScriptPlayer
     @timeCritical = false
     clearTimeout(@breakTid)
     @named.scopes.forEach (scope)->
+      console.log scope.blimp(-1)
       scope.blimp(-1).clear()
     return
 

@@ -9,10 +9,13 @@
       this.playing = false;
       this.breakTid = 0;
       this.timeCritical = false;
+      this.wait_default = 80;
+      this.timeout_default = 15000;
+      this.choicetimeout_default = 30000;
     }
 
     SakuraScriptPlayer.prototype.play = function(script, listener) {
-      var recur, splitargs, tags;
+      var recur, splitargs, state, tags;
       if (listener == null) {
         listener = {};
       }
@@ -23,7 +26,6 @@
       this["break"]();
       this.playing = true;
       this.timeCritical = false;
-      this.quick = false;
       splitargs = function(str) {
         return str.replace(/"((?:\\\\|\\"|[^"])*)"/g, function(all, quoted) {
           return quoted.replace(/,/g, '\0');
@@ -34,109 +36,154 @@
       tags = [
         {
           re: /^\\[h0]/,
-          match: function(group) {
-            return this.named.scope(0).blimp(0);
+          match: function(group, state) {
+            return this.named.scope(0);
           }
         }, {
           re: /^\\[u1]/,
-          match: function(group) {
-            return this.named.scope(1).blimp(0);
+          match: function(group, state) {
+            return this.named.scope(1);
           }
         }, {
           re: /^\\p\[(\d+)\]/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope(Number(group[1]));
           }
         }, {
           re: /^\\p(\d)/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope(Number(group[1]));
           }
         }, {
           re: /^\\s(\d)/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().surface(Number(group[1]));
           }
         }, {
           re: /^\\s\[([^\]]+)\]/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().surface(Number(group[1]));
           }
         }, {
           re: /^\\b(\d)/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().blimp(Number(group[1]));
           }
         }, {
           re: /^\\b\[([^\]]+)\]/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().blimp(Number(group[1]));
           }
         }, {
           re: /^\\i(\d)/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().surface().play(Number(group[1]));
           }
         }, {
           re: /^\\i\[(\d+)\]/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().surface().play(Number(group[1]));
           }
         }, {
           re: /^\\w(\d+)/,
-          match: function(group) {
-            return this.wait = Number(group[1]) * 100;
+          match: function(group, state) {
+            return state.wait = Number(group[1]) * 100;
           }
         }, {
           re: /^\\\_w\[(\d+)\]/,
-          match: function(group) {
-            return this.wait = Number(group[1]);
+          match: function(group, state) {
+            return state.wait = Number(group[1]);
           }
         }, {
           re: /^\\\_q/,
-          match: function(group) {
-            return this.quick = !this.quick;
+          match: function(group, state) {
+            return state.quick = !state.quick;
+          }
+        }, {
+          re: /^\\\_s/,
+          match: function(group, state) {
+            return state.synchronized = state.synchronized ? false : [0, 1];
+          }
+        }, {
+          re: /^\\\_s\[([^\]]+)\]/,
+          match: function(group, state) {
+            return state.synchronized = state.synchronized ? false : splitargs(group[1]).map(function(n) {
+              return Number(n);
+            });
           }
         }, {
           re: /^\\t/,
-          match: function(group) {
+          match: function(group, state) {
             return this.timeCritical = true;
           }
         }, {
+          re: /^\\\!\[\s*set\s*,\s*choicetimeout\s*,\s*(-?\d+)\s*\]/,
+          match: function(group, state) {
+            return state.choicetimeout = Number(group[1]);
+          }
+        }, {
+          re: /^\\\*/,
+          match: function(group, state) {
+            return state.choicetimeout = -1;
+          }
+        }, {
           re: /^\\q\[([^\]]+)\]/,
-          match: function(group) {
-            var id, title, _ref;
-            _ref = group[1].split(",", 2), title = _ref[0], id = _ref[1];
-            return this.named.scope().blimp().choice(title, id);
+          match: function(group, state) {
+            var blimp;
+            state.has_choice = true;
+            blimp = this.named.scope().blimp();
+            return blimp.choice.apply(blimp, splitargs(group[1]));
+          }
+        }, {
+          re: /^\\__q\[([^\]]+)\]/,
+          match: function(group, state) {
+            var blimp;
+            state.has_choice = true;
+            blimp = this.named.scope().blimp();
+            return blimp.choiceBegin.apply(blimp, splitargs(group[1]));
+          }
+        }, {
+          re: /^\\__q/,
+          match: function(group, state) {
+            return this.named.scope().blimp().choiceEnd();
+          }
+        }, {
+          re: /^\\q(?:\d+)?\[([^\]]+)\]\[([^\]]+)\]/,
+          match: function(group, state) {
+            state.has_choice = true;
+            this.named.scope().blimp().choice(group[2], group[1]);
+            return this.named.scope().blimp().br();
           }
         }, {
           re: /^\\_a\[([^\]]+)\]/,
-          match: function(group) {
-            return this.named.scope().blimp().anchorBegin(group[1]);
+          match: function(group, state) {
+            var blimp;
+            blimp = this.named.scope().blimp();
+            return blimp.anchorBegin.apply(blimp, splitargs(group[1]));
           }
         }, {
           re: /^\\_a/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().blimp().anchorEnd();
           }
         }, {
           re: /^\\n\[half\]/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().blimp().br();
           }
         }, {
           re: /^\\n/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().blimp().br();
           }
         }, {
           re: /^\\c/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().blimp().clear();
           }
         }, {
-          re: /^\\e/,
-          match: function(group) {
+          re: /^\\[ez]/,
+          match: function(group, state) {
             this.playing = false;
             return this.named.scopes.forEach(function(scope) {
               return scope.surface().yenE();
@@ -144,7 +191,7 @@
           }
         }, {
           re: /^\\-/,
-          match: function(group) {
+          match: function(group, state) {
             this.playing = false;
             this.named.scopes.forEach(function(scope) {
               return scope.surface().yenE();
@@ -153,12 +200,12 @@
           }
         }, {
           re: /^\\\\/,
-          match: function(group) {
+          match: function(group, state) {
             return this.named.scope().blimp().talk("\\");
           }
         }, {
-          re: /^\\\!\[\s*open\s*\,\s*communicatebox\s*\]/,
-          match: function(group) {
+          re: /^\\\!\[\s*open\s*,\s*communicatebox\s*\]/,
+          match: function(group, state) {
             return setTimeout(((function(_this) {
               return function() {
                 return _this.named.openCommunicateBox();
@@ -166,8 +213,17 @@
             })(this)), 2000);
           }
         }, {
-          re: /^\\\!\[\s*open\s*\,\s*inputbox\s*\,((?:\\\\|\\\]|[^\]])+)\]/,
-          match: function(group) {
+          re: /^\\__c/,
+          match: function(group, state) {
+            return setTimeout(((function(_this) {
+              return function() {
+                return _this.named.openCommunicateBox();
+              };
+            })(this)), 2000);
+          }
+        }, {
+          re: /^\\\!\[\s*open\s*,\s*inputbox\s*,((?:\\\\|\\\]|[^\]])+)\]/,
+          match: function(group, state) {
             return setTimeout(((function(_this) {
               return function() {
                 return _this.named.openInputBox(splitargs(group[1])[0]);
@@ -175,8 +231,8 @@
             })(this)), 2000);
           }
         }, {
-          re: /^\\\!\[\s*raise\s*\,\s*((?:\\\\|\\\]|[^\]])+)\]/,
-          match: function(group) {
+          re: /^\\\!\[\s*raise\s*,\s*((?:\\\\|\\\]|[^\]])+)\]/,
+          match: function(group, state) {
             return setTimeout(((function(_this) {
               return function() {
                 return _this.trigger_all('script:raise', listener, splitargs(group[1]));
@@ -184,37 +240,110 @@
             })(this)), 0);
           }
         }, {
+          re: /^\\_u\[0x(\d+)\]/,
+          match: function(group, state) {
+            state.wait = this.wait_default;
+            return this.named.scope().blimp().talk('&#x' + group[1] + ';');
+          }
+        }, {
+          re: /^\\_m\[0x(\d+)\]/,
+          match: function(group, state) {
+            state.wait = this.wait_default;
+            return this.named.scope().blimp().talk('&#x' + group[1] + ';');
+          }
+        }, {
+          re: /^\\&\[([^\]]+)\]/,
+          match: function(group, state) {
+            state.wait = this.wait_default;
+            return this.named.scope().blimp().talk('&' + group[1] + ';');
+          }
+        }, {
           re: /^\\[45Cx67+v8]/,
-          match: function(group) {
+          match: function(group, state) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\_[ns+V]/,
+          match: function(group, state) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\__[qtc]/,
+          match: function(group, state) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\[f8j]\[.*?\]/,
+          match: function(group, state) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\_[bl!?s]\[.*?\]/,
+          match: function(group, state) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\__[wq]\[.*?\]/,
+          match: function(group, state) {
             return this.named.scope().blimp().talk(group[0]);
           }
         }, {
           re: /^\\!\[.*?\]/,
-          match: function(group) {
+          match: function(group, state) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
+          re: /^\\!_[v]\[.*?\]/,
+          match: function(group, state) {
             return this.named.scope().blimp().talk(group[0]);
           }
         }, {
           re: /^./,
-          match: function(group) {
-            return this.named.scope().blimp().talk(group[0]);
+          match: function(group, state) {
+            state.wait = this.wait_default;
+            if (!state.synchronized) {
+              return this.named.scope().blimp().talk(group[0]);
+            } else {
+              return state.synchronized.forEach((function(_this) {
+                return function(scopeid) {
+                  var _ref;
+                  return (_ref = _this.named.scopes[scopeid]) != null ? _ref.blimp().talk(group[0]) : void 0;
+                };
+              })(this));
+            }
           }
         }
       ];
+      state = {
+        quick: false,
+        synchronized: false,
+        has_choice: false
+      };
+      this.named.scopes.forEach(function(scope) {
+        scope.blimp(0);
+        return scope.blimp(-1);
+      });
       (recur = (function(_this) {
         return function() {
-          var tag;
+          var tag, timeout;
           if (script.length === 0) {
             _this.playing = false;
           }
           if (!_this.playing) {
             _this.trigger_all('finish', listener);
-            _this.breakTid = setTimeout(function() {
-              _this.trigger_all('close', listener);
-              return _this["break"]();
-            }, 10000);
+            if (state.has_choice) {
+              timeout = state.choicetimeout != null ? state.choicetimeout : _this.choicetimeout_default;
+            } else {
+              timeout = _this.timeout_default;
+            }
+            if (timeout > 0) {
+              _this.breakTid = setTimeout((function() {
+                return _this["break"]();
+              }), timeout);
+            }
             return;
           }
-          _this.wait = 80;
+          state.wait = 0;
           tag = tags.find(function(tag) {
             return tag.re.test(script);
           });
@@ -222,11 +351,11 @@
             script = script.replace(tag.re, function() {
               var all, group, offset, _i;
               group = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), offset = arguments[_i++], all = arguments[_i++];
-              tag.match.call(_this, group);
+              tag.match.call(_this, group, state);
               return '';
             });
           }
-          return _this.breakTid = setTimeout(recur, _this.quick ? 0 : _this.wait);
+          return _this.breakTid = setTimeout(recur, state.quick ? 0 : state.wait);
         };
       })(this))();
     };

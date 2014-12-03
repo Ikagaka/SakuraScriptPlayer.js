@@ -18,10 +18,10 @@
 + \\e, \\-, \\\\, (\\z)
 + \\![open,communicatebox], \\![open,inputbox,id,wait,text], (\\__c)
 + \\![raise]
-+ \_u[], \_m[], \&[]
++ \\_u[], \\_m[], \\&[]
 
 ### not implemented
 
 + \\![bind,category,part,1]
-+ \\x, \\![*]
++ \\![*]
 + \\j[ID]

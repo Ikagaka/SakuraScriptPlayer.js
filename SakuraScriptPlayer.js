@@ -131,7 +131,7 @@
           re: /^\\x/,
           match: function(group, state) {
             state.click_wait = true;
-            return this.named.scope(0);
+            return this.named.scope(0).blimp().showWait();
           }
         }, {
           re: /^\\\!\[\s*set\s*,\s*choicetimeout\s*,\s*(-?\d+)\s*\]/,

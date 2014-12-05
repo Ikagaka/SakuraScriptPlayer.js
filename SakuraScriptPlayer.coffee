@@ -45,7 +45,7 @@ class SakuraScriptPlayer
       {re: /^\\\_s/, match: (group, state) -> state.synchronized = if state.synchronized then false else [0, 1]}
       {re: /^\\\_s\[([^\]]+)\]/, match: (group, state) -> state.synchronized = if state.synchronized then false else splitargs(group[1]).map (n) -> Number(n)}
       {re: /^\\t/, match: (group, state) -> @timeCritical = true}
-      {re: /^\\x/, match: (group, state) -> state.click_wait = true; @named.scope(0)}
+      {re: /^\\x/, match: (group, state) -> state.click_wait = true; @named.scope(0).blimp().showWait() }
       {re: /^\\\!\[\s*set\s*,\s*choicetimeout\s*,\s*(-?\d+)\s*\]/, match: (group, state) -> state.choicetimeout = Number group[1]}
       {re: /^\\\*/, match: (group, state) -> state.choicetimeout = -1}
       {re: /^\\q\[([^\]]+)\]/, match: (group, state) -> state.has_choice = true; blimp = @named.scope().blimp(); blimp.choice.apply(blimp, splitargs(group[1]))}

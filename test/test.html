@@ -20,29 +20,40 @@ nar: <input type="file" id="nar" /><br />
 SakuraScript: <input type="text" value="\t\0\s[0]Hello World!\w8\![raise,OnTest,&#x22;1,2&#x22;,34,\[56\],\[7\\8\]]\n\1\s[10]Hello Web Ghost!\n\h\n[half]\q[選択肢,choiceselect] \q[On選択肢,OnC,r1,r2] \q[選択肢Ex,choiceselect,ex1,ex2] \__q[choiceselect2]choice2\__q\n\_a[anchor]anchor\_a \_a[OnA,r1,r2]Onanchor\_a \_a[anchor,ex1,ex2]anchorEx\_a\n\1CkickWaiting\x\cClicked.\e" id="SakuraScript"/>
 <input type="button" value="play" id="Play"/>
 <script>
+function loadNar(src){
+  return function(){
+    return new Promise(function(resolve, reject){
+      var loader = new Nar.Loader();
+      loader.loadFromURL(src, function(err, nar){
+        if(!!err) return reject(err);
+        resolve(nar);
+      });
+    });
+  }
+}
+
+function getDir(reg){
+  return function(nar){
+    return new Promise(function(resolve, reject){
+      var dic = nar.getDirectory(reg);
+      var dir = Object.keys(dic).reduce(function(_dic, path){
+        _dic[path] = dic[path].asArrayBuffer();
+        return _dic;
+      }, {});
+      resolve(dir);
+    });
+  };
+}
+
 Promise.all([
-  new Promise(function(resolve, reject){
-    var loader = new Nar.Loader();
-    loader.loadFromURL("../node_modules/ikagaka.nar.js/vendor/mobilemaster.nar", function(err, nar){
-      if(!!err) return reject(err);
-      var shell = new Shell(nar.getDirectory(/shell\/master\//));
-      shell.load(function(err){
-        if(!!err) return reject(err);
-        resolve(shell);
-      });
-    });
-  }),
-  new Promise(function(resolve, reject){
-    var loader = new Nar.Loader();
-    loader.loadFromURL("../node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vendor/origin.nar", function(err, nar){
-      if(!!err) return reject(err);
-      var balloon = new Balloon(nar.directory);
-      balloon.load(function(err){
-        if(!!err) return reject(err);
-        resolve(balloon);
-      });
-    });
-  })
+  Promise.resolve()
+  .then(loadNar("../node_modules/ikagaka.nar.js/vendor/mobilemaster.nar"))
+  .then(getDir(/shell\/master\//))
+  .then(function(dir){ return new Shell(dir).load(); }),
+  Promise.resolve()
+  .then(loadNar("../node_modules/ikagaka.named.js/node_modules/ikagaka.balloon.js/vendor/origin.nar"))
+  .then(getDir(/^/))
+  .then(function(dir){ return new Balloon(dir).load(); })
 ]).then(function(tmp){
   var shell = tmp[0];
   var balloon = tmp[1];
@@ -52,66 +63,66 @@ Promise.all([
 
   var nid = nmgr.materialize(shell, balloon);
   var named = nmgr.named(nid);
-  named.load(function(){
-    var ssp = new SakuraScriptPlayer(named);
-    ssp
+  return named.load();
+}).then(function(named){
+  var ssp = new SakuraScriptPlayer(named);
+  ssp
     .on('finish',function(){console.log('finish')})
     .on('reject',function(){console.log('reject')})
     .on('close',function(){console.log('close')})
     .on('script:destroy',function(){console.log('script:destroy')})
     .on('script:raise',function(args){console.log('script:raise', args)});
-    var ssps = [ssp];
+  var ssps = [ssp];
 
-    $(named.element).on("IkagakaSurfaceEvent", function(ev){
-      console.log(ev.detail);
-    });
-
-    $("#nar").change(function(ev){
-      var loader = new Nar.Loader();
-      var file = ev.target.files[0];
-      loader.loadFromBlob(file, function(err, nar){
-        $("#nar").val(null);
-        if(!!err) return console.error(err.stack);
-        var shell = new Shell(nar.getDirectory(/shell\/master\//));
-        shell.load(function(err){
-          if(!!err) return console.error(err.stack);
-          var nid = nmgr.materialize(shell, balloon);
-          var named = nmgr.named(nid);
-          console.log(named)
-          var ssp = new SakuraScriptPlayer(named);
-          ssp
-          .on('finish',function(){console.log('finish')})
-          .on('reject',function(){console.log('reject')})
-          .on('close',function(){console.log('close')})
-          .on('script:destroy',function(){console.log('script:destroy')})
-          .on('script:raise',function(args){console.log('script:raise', args)});
-          ssps.push(ssp);
-          $(named.element).on("IkagakaSurfaceEvent", function(ev){
-            console.log(ev.detail);
-          });
-          ssp.play("\\0\\s[0]\\1\\s[10]");
-        });
-      });
-    });
-
-
-    $("#Play").click(function(){
-      var SakuraScript = $("#SakuraScript").val();
-
-      console.log(SakuraScript);
-
-      ssps.forEach(function(ssp){
-        ssp.play(SakuraScript, {
-          finish: function(){console.log('session', 'finish')},
-          reject: function(){console.log('session', 'reject')},
-          close: function(){console.log('session', 'close')},
-          'script:destroy': function(){console.log('session', 'script:destroy')},
-          'script:raise': (function(args){console.log('session', 'script:raise', args, this)}).bind(ssp),
-        });
-      });
-    }).click();
-
+  $(named.element).on("IkagakaSurfaceEvent", function(ev){
+    console.log(ev.detail);
   });
+
+  $("#nar").change(function(ev){
+    var loader = new Nar.Loader();
+    var file = ev.target.files[0];
+    loader.loadFromBlob(file, function(err, nar){
+      $("#nar").val(null);
+      if(!!err) return console.error(err.stack);
+      var shell = new Shell(nar.getDirectory(/shell\/master\//));
+      shell.load(function(err){
+        if(!!err) return console.error(err.stack);
+        var nid = nmgr.materialize(shell, balloon);
+        var named = nmgr.named(nid);
+        console.log(named)
+        var ssp = new SakuraScriptPlayer(named);
+        ssp
+        .on('finish',function(){console.log('finish')})
+        .on('reject',function(){console.log('reject')})
+        .on('close',function(){console.log('close')})
+        .on('script:destroy',function(){console.log('script:destroy')})
+        .on('script:raise',function(args){console.log('script:raise', args)});
+        ssps.push(ssp);
+        $(named.element).on("IkagakaSurfaceEvent", function(ev){
+          console.log(ev.detail);
+        });
+        ssp.play("\\0\\s[0]\\1\\s[10]");
+      });
+    });
+  });
+
+
+  $("#Play").click(function(){
+    var SakuraScript = $("#SakuraScript").val();
+
+    console.log(SakuraScript);
+
+    ssps.forEach(function(ssp){
+      ssp.play(SakuraScript, {
+        finish: function(){console.log('session', 'finish')},
+        reject: function(){console.log('session', 'reject')},
+        close: function(){console.log('session', 'close')},
+        'script:destroy': function(){console.log('session', 'script:destroy')},
+        'script:raise': (function(args){console.log('session', 'script:raise', args, this)}).bind(ssp),
+      });
+    });
+  }).click();
+
 }).catch(function(err){ console.error(err.stack) });
 
 

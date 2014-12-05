@@ -7,8 +7,8 @@ class SakuraScriptPlayer
     @timeout_default = 15000
     @choicetimeout_default = 30000
     @continue = null
-    $(@named.element).on "IkagakaSurfaceEvent", ({detail: {ID}})=>
-      if !!@continue and ID is "OnBalloonClick"
+    @named.on "balloonclick", (ev)=>
+      if !!@continue
         fn = @continue
         @continue = null
         fn()

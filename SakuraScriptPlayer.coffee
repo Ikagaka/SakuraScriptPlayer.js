@@ -39,7 +39,7 @@ class SakuraScriptPlayer
       {re: /^\\b\[([^\]]+)\]/, match: (group, state) -> @named.scope().blimp(Number group[1])}
       {re: /^\\i(\d)/, match: (group, state) -> @named.scope().surface().play(Number group[1])}
       {re: /^\\i\[(\d+)\]/, match: (group, state) -> @named.scope().surface().play(Number group[1])}
-      {re: /^\\w(\d+)/, match: (group, state) -> state.wait = Number(group[1])*100}
+      {re: /^\\w(\d)/, match: (group, state) -> state.wait = Number(group[1])*100}
       {re: /^\\\_w\[(\d+)\]/, match: (group, state) -> state.wait = Number(group[1])}
       {re: /^\\\_q/, match: (group, state) -> state.quick = !state.quick}
       {re: /^\\\_s/, match: (group, state) -> state.synchronized = if state.synchronized then false else [0, 1]}

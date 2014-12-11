@@ -11,6 +11,7 @@ class SakuraScriptPlayer
       if !!@continue
         fn = @continue
         @continue = null
+        @named.scope(0)
         fn()
 
 

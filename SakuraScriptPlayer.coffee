@@ -35,7 +35,7 @@ class SakuraScriptPlayer
       {re: /^\\p\[(\d+)\]/, match: (group, state) -> @named.scope(Number group[1])}
       {re: /^\\p(\d)/, match: (group, state) -> @named.scope(Number group[1])}
       {re: /^\\s(\d)/, match: (group, state) -> @named.scope().surface(Number group[1])}
-      {re: /^\\s\[([^\]]+)\]/, match: (group, state) -> @named.scope().surface(Number group[1])}
+      {re: /^\\s\[([^\]]+)\]/, match: (group, state) -> @named.scope().surface(if isNaN(group[1]) then group[1] else Number group[1])}
       {re: /^\\b(\d)/, match: (group, state) -> @named.scope().blimp(Number group[1])}
       {re: /^\\b\[([^\]]+)\]/, match: (group, state) -> @named.scope().blimp(Number group[1])}
       {re: /^\\i(\d)/, match: (group, state) -> @named.scope().surface().play(Number group[1])}

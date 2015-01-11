@@ -296,7 +296,7 @@
             return this.named.scope().blimp().talk(group[0]);
           }
         }, {
-          re: /^\\_[bl!?s]\[.*?\]/,
+          re: /^\\_[bl!?sv]\[.*?\]/,
           match: function(group, state) {
             return this.named.scope().blimp().talk(group[0]);
           }
@@ -307,11 +307,6 @@
           }
         }, {
           re: /^\\!\[.*?\]/,
-          match: function(group, state) {
-            return this.named.scope().blimp().talk(group[0]);
-          }
-        }, {
-          re: /^\\!_[v]\[.*?\]/,
           match: function(group, state) {
             return this.named.scope().blimp().talk(group[0]);
           }

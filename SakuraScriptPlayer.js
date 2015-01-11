@@ -258,6 +258,11 @@
             })(this)), 0);
           }
         }, {
+          re: /^\\!\[\*\]/,
+          match: function(group, state) {
+            return this.named.scope().blimp().marker();
+          }
+        }, {
           re: /^\\_u\[0x(\d+)\]/,
           match: function(group, state) {
             state.wait = this.wait_default;

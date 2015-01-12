@@ -59,6 +59,7 @@ class SakuraScriptPlayer
       {re: /^\\n\[(\d+)\]/, match: (group, state) -> @named.scope().blimp().br(group[1] / 100)}
       {re: /^\\n/, match: (group, state) -> @named.scope().blimp().br()}
       {re: /^\\_l\[([^\]]+)\]/, match: (group, state) -> blimp = @named.scope().blimp(); blimp.location.apply(blimp, splitargs(group[1]))}
+      {re: /^\\f\[([^\]]+)\]/, match: (group, state) -> blimp = @named.scope().blimp(); blimp.font.apply(blimp, splitargs(group[1]))}
       {re: /^\\c/, match: (group, state) -> @named.scope().blimp().clear()}
       {re: /^\\[ez]/, match: (group, state) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
       {re: /^\\-/, match: (group, state) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:halt', listener)}

@@ -69,9 +69,9 @@ class SakuraScriptPlayer
       {re: /^\\\!\[\s*open\s*,\s*inputbox\s*,((?:\\\\|\\\]|[^\]])+)\]/, match: (group, state) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}
       {re: /^\\\!\[\s*raise\s*,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group, state) -> setTimeout((=> @trigger_all('script:raise', listener, splitargs(group[1])) ), 0)}
       {re: /^\\!\[\*\]/, match: (group, state) -> @named.scope().blimp().marker()}
-      {re: /^\\_u\[0x(\d+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talk('&#x'+group[1]+';')}
-      {re: /^\\_m\[0x(\d+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talk('&#x'+group[1]+';')}
-      {re: /^\\&\[([^\]]+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talk('&'+group[1]+';')}
+      {re: /^\\_u\[0x(\d+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talkraw('&#x'+group[1]+';')}
+      {re: /^\\_m\[0x(\d+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talkraw('&#x'+group[1]+';')}
+      {re: /^\\&\[([^\]]+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talkraw('&'+group[1]+';')}
       {re: /^\\[45Cx67+v8]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\_[ns+V]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
       {re: /^\\__[qtc]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick

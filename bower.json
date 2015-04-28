@@ -4,7 +4,7 @@
   "dependencies": {
     "cuttlebone": "*"
   },
-  "main": "SakuraScriptPlayer.js",
+  "main": "release/SakuraScriptPlayer.js",
   "ignore": [
     "**/.*",
     "bower_components",

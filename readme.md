@@ -1,10 +1,9 @@
 # SakuraScriptPlayer.js
 
++ [demo](https://ikagaka.github.io/SakuraScriptPlayer/demo/)
++ [wiki](https://github.com/Ikagaka/SakuraScriptPlayer.js/wiki)
+
 ![screenshot](https://raw.githubusercontent.com/Ikagaka/SakuraScriptPlayer.js/master/screenshot.png )
-
-+ [demo](https://ikagaka.github.io/SakuraScriptPlayer.demo/node_modules/ikagaka.sakurascriptplayer.js/test.html)
-+ [wiki](https://github.com/Ikagaka/SakuraScriptPlayer.js/wiki/SakuraScriptPlayer.js )
-
 
 ## SakuraScript
 

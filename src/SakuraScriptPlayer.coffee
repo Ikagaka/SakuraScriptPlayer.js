@@ -1,4 +1,5 @@
 class SakuraScriptPlayer
+
   constructor: (@named)->
     @playing = false
     @breakTid = 0
@@ -105,7 +106,7 @@ class SakuraScriptPlayer
           @breakTid = setTimeout (=> @break()), timeout
         return
       state.wait = 0
-      tag = tags.find (tag)-> tag.re.test(script)
+      tag = tags.filter((tag)-> tag.re.test(script))[0]
       if tag?
         script = script.replace tag.re, (group..., offset, all) =>
           tag.match.call @, group, state # do func
@@ -167,10 +168,3 @@ class SakuraScriptPlayer
     @trigger_local.apply(@, [event, listener].concat(args))
     @trigger.apply(@, [event].concat(args))
     @
-
-if module?.exports?
-  module.exports = SakuraScriptPlayer
-else if @Ikagaka?
-  @Ikagaka.SakuraScriptPlayer = SakuraScriptPlayer
-else
-  @SakuraScriptPlayer = SakuraScriptPlayer

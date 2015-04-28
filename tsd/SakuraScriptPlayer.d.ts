@@ -1,3 +1,4 @@
+/// <reference path="../bower_components/cuttlebone/tsd/cuttlebone.d.ts"/>
 
 declare class SakuraScriptPlayer {
   constructor(named: Named);

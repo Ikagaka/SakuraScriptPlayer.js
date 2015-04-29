@@ -1,0 +1,23 @@
+{
+  "name": "cuttlebone",
+  "version": "0.0.1",
+  "description": "ukagaka shell renderer for web browser",
+  "license": "MIT",
+  "authors": ["legokichi"],
+  "dependencies": {
+    "surfaces_txt2yaml": "*",
+    "narloader": "*",
+    "lodash": "*",
+    "zepto": "*"
+  },
+  "devDependencies": {
+  },
+  "main": "release/cuttlebone.js",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules"
+  ],
+  "exportsOverride": {
+  }
+}

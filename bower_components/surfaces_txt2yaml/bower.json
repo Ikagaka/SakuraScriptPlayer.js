@@ -1,0 +1,20 @@
+{
+	"name": "surfaces_txt2yaml",
+	"description": "surfaces.txt -> surfaces.yaml",
+	"dependencies": {
+		"js-yaml": ">= 3.0.2"
+	},
+	"main": "lib/surfaces_txt2yaml.js",
+	"ignore": [
+		"**/.*",
+		"bower_components",
+		"node_modules",
+		"npm-debug.log",
+		"coverage"
+	],
+	"author": {
+		"name": "narazaka",
+		"url": "http://narazaka.net/"
+	},
+	"license": "MIT"
+}

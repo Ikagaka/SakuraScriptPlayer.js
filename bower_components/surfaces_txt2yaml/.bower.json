@@ -1,0 +1,30 @@
+{
+  "name": "surfaces_txt2yaml",
+  "description": "surfaces.txt -> surfaces.yaml",
+  "dependencies": {
+    "js-yaml": ">= 3.0.2"
+  },
+  "main": "lib/surfaces_txt2yaml.js",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "npm-debug.log",
+    "coverage"
+  ],
+  "author": {
+    "name": "narazaka",
+    "url": "http://narazaka.net/"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Narazaka/surfaces_txt2yaml",
+  "_release": "2ebdba639d",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "2ebdba639de967358fa592cd4d3036f6d1db2066"
+  },
+  "_source": "git://github.com/Narazaka/surfaces_txt2yaml.git",
+  "_target": "*",
+  "_originalSource": "surfaces_txt2yaml"
+}

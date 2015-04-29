@@ -1,0 +1,31 @@
+{
+  "name": "cuttlebone",
+  "version": "0.0.3",
+  "description": "ukagaka shell renderer for web browser",
+  "url": "https://github.com/ikagaka/cuttlebone.js",
+  "keywords": ["unstable", "ikagaka", "ukagaka", "cuttlebone"],
+  "scripts": {
+    "build": "npm run build-src; npm run build-test",
+    "build-src": "node node_modules/coffee-script/bin/coffee -cm --join release/cuttlebone.js -- src/header.coffee src/*.coffee src/footer.coffee",
+    "build-test": "node node_modules/coffee-script/bin/coffee -c test/*.coffee",
+    "watch": "npm run build; grunt",
+    "init": "npm update; bower update; npm run build; npm run watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ikagaka/cuttlebone"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "coffee-script": "",
+    "grunt-contrib-connect": "",
+    "grunt-contrib-watch": "",
+    "grunt-shell": ""
+  },
+  "bugs":           {"url": "https://github.com/Ikagaka/cuttlebone/issues"},
+  "main":           "release/cuttlebone.js",
+  "author":         "Ikagaka",
+  "license":        "MIT",
+  "contributors":   ["legokichi"]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "cuttlebone",
+  "description": "ukagaka shell renderer for web browser",
+  "license": "MIT",
+  "authors": [
+    "legokichi"
+  ],
+  "dependencies": {
+    "surfaces_txt2yaml": "*",
+    "narloader": "*",
+    "lodash": "*",
+    "zepto": "*"
+  },
+  "devDependencies": {},
+  "main": "release/cuttlebone.js",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules"
+  ],
+  "exportsOverride": {},
+  "homepage": "https://github.com/Ikagaka/cuttlebone",
+  "_release": "c5d4b47ca7",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c5d4b47ca7cea40d4fe567ee93aa1ccc0b45fa7e"
+  },
+  "_source": "git://github.com/Ikagaka/cuttlebone.git",
+  "_target": "*",
+  "_originalSource": "cuttlebone"
+}

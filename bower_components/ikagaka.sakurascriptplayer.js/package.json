@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "npm run build-src; npm run build-test",
-    "build-src": "node node_modules/coffee-script/bin/coffee -cm --join release/SakuraScriptPlayer.js -- src/header.coffee src/*.coffee src/footer.coffee",
+    "build-src": "node node_modules/coffee-script/bin/coffee -cm --join lib/SakuraScriptPlayer.js -- src/header.coffee src/*.coffee src/footer.coffee",
     "build-test": "node node_modules/coffee-script/bin/coffee -c test/*.coffee",
     "watch": "npm run build; grunt",
     "init": "npm update; bower update; npm run build; npm run watch"
@@ -31,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/Ikagaka/cuttlebone/issues"
   },
-  "main": "release/SakuraScriptPlayer.js",
+  "main": "lib/SakuraScriptPlayer.js",
   "author": "Ikagaka",
   "license": "MIT",
   "contributors": [

@@ -4,7 +4,7 @@
   "dependencies": {
     "cuttlebone": "*"
   },
-  "main": "release/SakuraScriptPlayer.js",
+  "main": "lib/SakuraScriptPlayer.js",
   "ignore": [
     "**/.*",
     "bower_components",
@@ -12,14 +12,13 @@
     "npm-debug.log"
   ],
   "homepage": "https://github.com/Ikagaka/SakuraScriptPlayer.js",
-  "_release": "49e103bdd4",
+  "_release": "bc5153766f",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "49e103bdd489d4c1390b806631902ef832ef7be2"
+    "commit": "bc5153766fe52a6168b2ee631358d3430c3b75cf"
   },
   "_source": "git://github.com/Ikagaka/SakuraScriptPlayer.js.git",
   "_target": "*",
-  "_originalSource": "ikagaka.sakurascriptplayer.js",
-  "_direct": true
+  "_originalSource": "ikagaka.sakurascriptplayer.js"
 }

@@ -44,8 +44,8 @@ class SakuraScriptPlayer
       {re: /^\\w(\d)/, match: (group, state) -> state.wait = Number(group[1])*100}
       {re: /^\\\_w\[(\d+)\]/, match: (group, state) -> state.wait = Number(group[1])}
       {re: /^\\\_q/, match: (group, state) -> state.quick = !state.quick}
-      {re: /^\\\_s/, match: (group, state) -> state.synchronized = if state.synchronized then false else [0, 1]}
       {re: /^\\\_s\[([^\]]+)\]/, match: (group, state) -> state.synchronized = if state.synchronized then false else splitargs(group[1]).map (n) -> Number(n)}
+      {re: /^\\\_s/, match: (group, state) -> state.synchronized = if state.synchronized then false else [0, 1]}
       {re: /^\\t/, match: (group, state) -> @timeCritical = true}
       {re: /^\\x/, match: (group, state) -> state.click_wait = true; @named.scope(0).blimp().showWait() }
       {re: /^\\\!\[\s*set\s*,\s*choicetimeout\s*,\s*(-?\d+)\s*\]/, match: (group, state) -> state.choicetimeout = Number group[1]}

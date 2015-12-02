@@ -168,3 +168,5 @@ class SakuraScriptPlayer
     @trigger_local.apply(@, [event, listener].concat(args))
     @trigger.apply(@, [event].concat(args))
     @
+
+module.exports = SakuraScriptPlayer

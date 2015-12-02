@@ -1,6 +1,6 @@
 {
   "name": "ikagaka.sakurascriptplayer.js",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "description": "ikagaka SakuraScript player",
   "url": "https://github.com/ikagaka/SakuraScriptPlayer.js",
   "keywords": [
@@ -9,10 +9,12 @@
     "ukagaka"
   ],
   "scripts": {
-    "build": "npm run build-src; npm run build-test",
-    "build-src": "node node_modules/coffee-script/bin/coffee -cm --join lib/SakuraScriptPlayer.js -- src/header.coffee src/*.coffee src/footer.coffee",
-    "build-test": "node node_modules/coffee-script/bin/coffee -c test/*.coffee",
-    "watch": "npm run build; grunt",
+    "init": "npm run update; npm run build",
+    "update": "rm -rf bower_components node_modules; npm update; bower update",
+    "clean": "rm lib/*.js dist/*.js demo/*.js",
+    "start": "http-server --silent -p 8000 & coffee -w --compile --output lib src/*.coffee & watchify lib/index.js --outfile dist/SakuraScriptPlayer.js  --standalone SakuraScriptPlayer -v",
+    "stop": "killall -- node */http-server -p 8000",
+    "build": "coffee -c -o lib src/*.coffee; browserify lib/index.js --standalone SakuraScriptPlayer -o dist/SakuraScriptPlayer.js",
     "init": "npm update; bower update; npm run build; npm run watch"
   },
   "repository": {
@@ -20,18 +22,13 @@
     "url": "https://github.com/ikagaka/SakuraScriptPlayer.js"
   },
   "dependencies": {
-    "coffee-script": "^1.9.2"
   },
   "devDependencies": {
-    "coffee-script": "",
-    "grunt-contrib-connect": "",
-    "grunt-contrib-watch": "",
-    "grunt-shell": ""
   },
   "bugs": {
     "url": "https://github.com/Ikagaka/cuttlebone/issues"
   },
-  "main": "lib/SakuraScriptPlayer.js",
+  "main": "dist/SakuraScriptPlayer.js",
   "author": "Ikagaka",
   "license": "MIT",
   "contributors": [

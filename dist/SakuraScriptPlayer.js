@@ -336,6 +336,11 @@
             return this.named.scope().blimp().talk(group[0]);
           }
         }, {
+          re: /^\s/,
+          match: function(group, state) {
+            return this.named.scope().blimp().talk(group[0]);
+          }
+        }, {
           re: /^./,
           match: function(group, state) {
             state.wait = this.wait_default;
@@ -411,7 +416,6 @@
       this.timeCritical = false;
       clearTimeout(this.breakTid);
       this.named.scopes.forEach(function(scope) {
-        console.log(scope.blimp(-1));
         return scope.blimp(-1).clear();
       });
     };

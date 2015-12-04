@@ -30,6 +30,12 @@ class SakuraScriptPlayer
       .replace /"((?:\\\\|\\"|[^"])*)"/g, (all, quoted) -> quoted.replace(/,/g,'\0')
       .split /\s*\,\s*/
       .map (arg) -> arg.replace /\0/g, ','
+    talk = (a)=>
+      @named.scope().blimp().talk(a)
+      @named.scope().surface().talk()
+    talkRaw = (a)=>
+      @named.scope().blimp().talkRaw(a)
+      @named.scope().surface().talk()
     tags = [
       {re: /^\\[h0]/, match: (group, state) -> @named.scope(0)}
       {re: /^\\[u1]/, match: (group, state) -> @named.scope(1)}
@@ -64,24 +70,24 @@ class SakuraScriptPlayer
       {re: /^\\c/, match: (group, state) -> @named.scope().blimp().clear()}
       {re: /^\\[ez]/, match: (group, state) -> @playing = false; @named.scopes.forEach (scope) -> scope.surface().yenE()}
       {re: /^\\-/, match: (group, state) -> @playing = false; @named.scopes.forEach((scope) -> scope.surface().yenE()); @trigger_all('script:halt', listener)}
-      {re: /^\\\\/, match: (group, state) -> @named.scope().blimp().talk("\\")}
+      {re: /^\\\\/, match: (group, state) -> talk("\\")}
       {re: /^\\\!\[\s*open\s*,\s*communicatebox\s*\]/, match: (group, state) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\__c/, match: (group, state) -> setTimeout((=> @named.openCommunicateBox() ), 2000)}
       {re: /^\\\!\[\s*open\s*,\s*inputbox\s*,((?:\\\\|\\\]|[^\]])+)\]/, match: (group, state) -> setTimeout((=> @named.openInputBox(splitargs(group[1])[0]) ), 2000)}
       {re: /^\\\!\[\s*raise\s*,\s*((?:\\\\|\\\]|[^\]])+)\]/, match: (group, state) -> setTimeout((=> @trigger_all('script:raise', listener, splitargs(group[1])) ), 0)}
       {re: /^\\!\[\*\]/, match: (group, state) -> @named.scope().blimp().marker()}
-      {re: /^\\_u\[([A-Fa-fXx0-9]+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talkraw('&#'+Number(group[1])+';')}
-      {re: /^\\_m\[([A-Fa-fXx0-9]+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talkraw('&#'+Number(group[1])+';')}
-      {re: /^\\&\[([A-Za-z0-9]+)\]/, match: (group, state) -> state.wait = @wait_default; @named.scope().blimp().talkraw('&'+group[1]+';')}
-      {re: /^\\[45Cx67+v8]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^\\_[ns+V]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^\\__[qtc]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^\\[f8j]\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^\\_[bl!?sv]\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^\\__[wq]\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^\\!\[.*?\]/, match: (group, state) -> @named.scope().blimp().talk(group[0])} # not implemented quick
-      {re: /^\s/, match: (group, state) -> @named.scope().blimp().talk(group[0])}
-      {re: /^./, match: (group, state) -> state.wait = @wait_default; if not state.synchronized then @named.scope().blimp().talk(group[0]) else state.synchronized.forEach (scopeid) => @named.scopes[scopeid]?.blimp().talk(group[0])}
+      {re: /^\\_u\[([A-Fa-fXx0-9]+)\]/, match: (group, state) -> state.wait = @wait_default; talkRaw('&#'+Number(group[1])+';')}
+      {re: /^\\_m\[([A-Fa-fXx0-9]+)\]/, match: (group, state) -> state.wait = @wait_default; talkRaw('&#'+Number(group[1])+';')}
+      {re: /^\\&\[([A-Za-z0-9]+)\]/, match: (group, state) -> state.wait = @wait_default; talkRaw('&'+group[1]+';')}
+      {re: /^\\[45Cx67+v8]/, match: (group, state) -> talk(group[0])} # not implemented quick
+      {re: /^\\_[ns+V]/, match: (group, state) -> talk(group[0])} # not implemented quick
+      {re: /^\\__[qtc]/, match: (group, state) -> talk(group[0])} # not implemented quick
+      {re: /^\\[f8j]\[.*?\]/, match: (group, state) -> talk(group[0])} # not implemented quick
+      {re: /^\\_[bl!?sv]\[.*?\]/, match: (group, state) -> talk(group[0])} # not implemented quick
+      {re: /^\\__[wq]\[.*?\]/, match: (group, state) -> talk(group[0])} # not implemented quick
+      {re: /^\\!\[.*?\]/, match: (group, state) -> talk(group[0])} # not implemented quick
+      {re: /^\s/, match: (group, state) -> talk(group[0])}
+      {re: /^./, match: (group, state) -> state.wait = @wait_default; if not state.synchronized then talk(group[0]) else state.synchronized.forEach (scopeid) => @named.scopes[scopeid]?.blimp().talk(group[0])}
     ]
 
     state =

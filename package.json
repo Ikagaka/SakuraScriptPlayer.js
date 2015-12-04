@@ -15,7 +15,8 @@
     "start": "http-server --silent -p 8000 & coffee -w --compile --output lib src/*.coffee & watchify lib/index.js --outfile dist/SakuraScriptPlayer.js  --standalone SakuraScriptPlayer -v",
     "stop": "killall -- node */http-server -p 8000",
     "build": "coffee -c -o lib src/*.coffee; browserify lib/index.js --standalone SakuraScriptPlayer -o dist/SakuraScriptPlayer.js",
-    "init": "npm update; bower update; npm run build; npm run watch"
+    "init": "npm update; bower update; npm run build; npm run watch",
+    "patch": "mversion patch -m"
   },
   "repository": {
     "type": "git",
